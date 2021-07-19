@@ -1,8 +1,11 @@
 package ca.bc.gov.educ.api.program.model.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -24,8 +27,9 @@ public class OptionalProgramRequirementCodeEntity  extends BaseEntity {
 	@Column(name = "DESCRIPTION", nullable = true)
     private String description;
 	
-	@Column(name = "REQUIREMENT_TYPE_CODE", nullable = true)
-    private String requirementTypeCode;
+	@OneToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "REQUIREMENT_TYPE_CODE", referencedColumnName = "REQUIREMENT_TYPE_CODE")
+    private RequirementTypeCodeEntity requirementTypeCode;
 	
 	@Column(name = "REQUIRED_CREDITS", nullable = true)
     private String requiredCredits;

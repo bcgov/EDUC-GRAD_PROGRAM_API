@@ -31,7 +31,9 @@ import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
+import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
+import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
 import ca.bc.gov.educ.api.program.util.GradValidation;
@@ -56,6 +58,12 @@ public class ProgramServiceTest {
 	
 	@MockBean
 	private OptionalProgramRepository optionalProgramRepository;
+	
+	@MockBean
+    private ProgramRequirementCodeRepository programRequirementCodeRepository; 
+    
+	@MockBean
+    private OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository; 
 	
 	@Autowired
 	GradValidation validation;
@@ -359,6 +367,71 @@ public class ProgramServiceTest {
 		
 	}
 	
+	@Test
+	public void testUpdateGradSpecialProgram_optionalProgramChanged() {
+		validation.clear();
+		OptionalProgram gradSpecialProgram = new OptionalProgram();
+		gradSpecialProgram.setOptionalProgramID(new UUID(1, 1));
+		gradSpecialProgram.setOptProgramCode("FI");
+		gradSpecialProgram.setGraduationProgramCode("ABCD");
+		gradSpecialProgram.setOptionalProgramName("EFGH");
+		OptionalProgramEntity toBeSaved = new OptionalProgramEntity();
+		toBeSaved.setOptionalProgramID(new UUID(1, 1));
+		toBeSaved.setOptProgramCode("FI");
+		toBeSaved.setGraduationProgramCode("ABCD");
+		toBeSaved.setOptionalProgramName("EFGH");
+		
+		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
+		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
+		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradSpecialProgramEntity.setOptProgramCode("DD");
+		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
+		Optional<OptionalProgramEntity> ent = Optional.of(gradSpecialProgramEntity);
+		Mockito.when(optionalProgramRepository.findById(gradSpecialProgram.getOptionalProgramID())).thenReturn(ent);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(Optional.of(gradSpecialProgramEntity));
+		Mockito.when(optionalProgramRepository.save(gradSpecialProgramEntity)).thenReturn(toBeSaved);
+		
+		try {
+			programService.updateGradSpecialPrograms(gradSpecialProgram);
+		} catch (GradBusinessRuleException e) {
+			List<String> errors = validation.getErrors();
+			assertEquals(1, errors.size());
+			return;
+		}		
+	}
+	
+	@Test
+	public void testGetSpecialProgramRulesByProgramCodeAndSpecialProgramCode() {
+		String programCode="2018-EN";
+		String optionalProgramCode="FI";
+		
+		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
+		gradSpecialProgramEntity.setGraduationProgramCode("2018-EN");
+		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradSpecialProgramEntity.setOptProgramCode("FI");
+		gradSpecialProgramEntity.setOptionalProgramName("French Immersion");
+		
+		List<OptionalProgramRequirementEntity> gradProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
+		OptionalProgramRequirementEntity ruleObj = new OptionalProgramRequirementEntity();
+		ruleObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramRequirementCodeEntity code = new OptionalProgramRequirementCodeEntity();
+		code.setOptProReqCode("100");
+		ruleObj.setOptionalProgramRequirementCode(code);
+		gradProgramRuleList.add(ruleObj);
+		ruleObj = new OptionalProgramRequirementEntity();
+		ruleObj.setOptionalProgramID(new UUID(2, 2));
+		OptionalProgramRequirementCodeEntity code2 = new OptionalProgramRequirementCodeEntity();
+		code2.setOptProReqCode("100");
+		ruleObj.setOptionalProgramRequirementCode(code2);
+		gradProgramRuleList.add(ruleObj);
+		
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradSpecialProgramEntity));
+		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradSpecialProgramEntity.getOptionalProgramID())).thenReturn(gradProgramRuleList);
+		
+		programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, optionalProgramCode);
+	}
+	
+	
 	@Test(expected = GradBusinessRuleException.class)
 	public void testUpdateGradSpecialProgram_excpetion() {
 		OptionalProgram gradSpecialProgram = new OptionalProgram();
@@ -460,6 +533,36 @@ public class ProgramServiceTest {
 		UUID ruleID=new UUID(1, 1);
 		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.empty());
 		programService.deleteGradSpecialProgramRules(ruleID);
+	}
+	
+	@Test
+	public void testGetAllProgramRequirementCodeList() {
+		List<ProgramRequirementCodeEntity> gradProgramList = new ArrayList<>();
+		ProgramRequirementCodeEntity obj = new ProgramRequirementCodeEntity();
+		obj.setProReqCode("300");
+		obj.setDescription("2018 Graduation Program");
+		gradProgramList.add(obj);
+		obj = new ProgramRequirementCodeEntity();
+		obj.setProReqCode("300");
+		obj.setDescription("2018 Graduation Program");
+		gradProgramList.add(obj);
+		Mockito.when(programRequirementCodeRepository.findAll()).thenReturn(gradProgramList);
+		programService.getAllProgramRequirementCodeList();
+	}
+	
+	@Test
+	public void testGetAllOptionalProgramRequirementCodeList() {
+		List<OptionalProgramRequirementCodeEntity> gradProgramList = new ArrayList<>();
+		OptionalProgramRequirementCodeEntity obj = new OptionalProgramRequirementCodeEntity();
+		obj.setOptProReqCode("300");
+		obj.setDescription("2018 Graduation Program");
+		gradProgramList.add(obj);
+		obj = new OptionalProgramRequirementCodeEntity();
+		obj.setOptProReqCode("400");
+		obj.setDescription("2018 Graduation Program");
+		gradProgramList.add(obj);
+		Mockito.when(optionalProgramRequirementCodeRepository.findAll()).thenReturn(gradProgramList);
+		programService.getAllOptionalProgramRequirementCodeList();
 	}
 	
 }

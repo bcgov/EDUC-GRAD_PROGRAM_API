@@ -22,19 +22,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import ca.bc.gov.educ.api.program.model.dto.GradRequirementTypes;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
+import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
@@ -42,7 +45,6 @@ import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepos
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
 @Service
@@ -74,6 +76,12 @@ public class ProgramService {
     private OptionalProgramRequirementTransformer optionalProgramRequirementTransformer; 
     
     @Autowired
+    private ProgramRequirementCodeTransformer programRequirementCodeTransformer; 
+    
+    @Autowired
+    private OptionalProgramRequirementCodeTransformer optionalProgramRequirementCodeTransformer; 
+    
+    @Autowired
     private OptionalProgramRepository optionalProgramRepository;  
 
     @Autowired
@@ -82,8 +90,6 @@ public class ProgramService {
     @Autowired
 	GradValidation validation;
     
-    @Autowired
-	EducGradProgramApiConstants educGradProgramManagementApiConstants;
     
     @Value("${validation.value.requirementType}")
 	String errorStringRequirementTypeInvalid;
@@ -102,7 +108,6 @@ public class ProgramService {
     
 	private static final String CREATE_USER="createUser";
 	private static final String CREATE_DATE="createDate";
-	private static final String CREATE="create";
     
     @Autowired
     RestTemplate restTemplate;
@@ -204,14 +209,6 @@ public class ProgramService {
 			toBeSavedObject.setProgramRequirementCode(programRequirementCodeRepository.getOne(gradProgramRule.getProgramRequirementCode().getProReqCode()));
 			return programRequirementTransformer.transformToDTO(programRequirementRepository.save(toBeSavedObject));					
 		}
-	}
-	
-	public boolean validateRequirementType(String toBeSavedRequirementType, String existingRequirementType,String accessToken,String task) {
-		if(task.equalsIgnoreCase(CREATE) || !existingRequirementType.equalsIgnoreCase(toBeSavedRequirementType)) {
-			GradRequirementTypes reqTypes = webClient.get().uri(String.format(educGradProgramManagementApiConstants.getGradRequirementTypeByCode(),toBeSavedRequirementType)).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradRequirementTypes.class).block();
-			return reqTypes != null;
-		}
-		return true;
 	}
 
 	public ProgramRequirement updateGradProgramRules(@Valid ProgramRequirement gradProgramRule) {
@@ -411,6 +408,15 @@ public class ProgramService {
 			validation.addErrorAndStop(String.format("Optional Program Code [%s] and Program Code [%s] combination does not exist",specialProgramCode,programCode));
 			return null;
 		}
+	}
+
+
+	public List<ProgramRequirementCode> getAllProgramRequirementCodeList() {
+		return programRequirementCodeTransformer.transformToDTO(programRequirementCodeRepository.findAll()); 
+	}
+	
+	public List<OptionalProgramRequirementCode> getAllOptionalProgramRequirementCodeList() {
+		return optionalProgramRequirementCodeTransformer.transformToDTO(optionalProgramRequirementCodeRepository.findAll()); 
 	}
 	
 }

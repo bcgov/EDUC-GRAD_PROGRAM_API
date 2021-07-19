@@ -25,6 +25,9 @@ public class EducGradProgramApiConstants {
     public static final String DELETE_PROGRAM_RULES_MAPPING = "/programrules/{programRuleID}";
     public static final String DELETE_OPTIONAL_PROGRAM_RULES_MAPPING = "/optionalprogramrules/{programRuleID}";
     public static final String GET_ALL_OPTIONAL_PROGRAM_MAPPING_BY_ID = "/optioanalprograms/id/{optionalProgramID}";
+    
+    public static final String GET_ALL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/programrequirementcode";
+    public static final String GET_ALL_OPTIONAL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/optionapProgramrequirementcode";
 
     //Attribute Constants
     public static final String GET_ALL_PROGRAM_RULES = "/programrules";

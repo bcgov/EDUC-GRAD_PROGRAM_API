@@ -28,7 +28,9 @@ import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
+import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
 import ca.bc.gov.educ.api.program.service.ProgramService;
 import ca.bc.gov.educ.api.program.util.ApiResponseModel;
 import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
@@ -360,6 +362,31 @@ public class ProgramController {
         return response.GET(programService.getSpecialProgram(programCode,optionalProgramCode));
     }
     
+    @GetMapping(value=EducGradProgramApiConstants.GET_ALL_PROGRAM_REQUIREMENT_CODES_MAPPING, produces= {"application/json"})
+    @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
+    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Programs Rules" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",content = @Content(array = @ArraySchema(schema = @Schema(implementation = GraduationProgramCode.class)))), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
+    public ResponseEntity<List<ProgramRequirementCode>> getAllProgramRequirementCode() { 
+    	logger.debug("getAllProgramRequirementCode : ");
+    	List<ProgramRequirementCode> programReqCodeList = programService.getAllProgramRequirementCodeList();
+    	if(!programReqCodeList.isEmpty()) {
+    		return response.GET(programReqCodeList,new TypeToken<List<ProgramRequirementCode>>() {}.getType());
+    	}
+    	return response.NO_CONTENT();
+    }
+    
+    @GetMapping(value=EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_REQUIREMENT_CODES_MAPPING, produces= {"application/json"})
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Programs Rules" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",content = @Content(array = @ArraySchema(schema = @Schema(implementation = GraduationProgramCode.class)))), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
+    public ResponseEntity<List<OptionalProgramRequirementCode>> getAllOptionalProgramRequirementCode() { 
+    	logger.debug("getAllOptionalProgramRequirementCode : ");
+    	List<OptionalProgramRequirementCode> programReqCodeList = programService.getAllOptionalProgramRequirementCodeList();
+    	if(!programReqCodeList.isEmpty()) {
+    		return response.GET(programReqCodeList,new TypeToken<List<OptionalProgramRequirementCode>>() {}.getType());
+    	}
+    	return response.NO_CONTENT();
+    }
     
     
 }

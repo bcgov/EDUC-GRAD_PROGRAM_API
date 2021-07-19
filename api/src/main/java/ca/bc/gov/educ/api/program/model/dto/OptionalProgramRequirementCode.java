@@ -13,7 +13,7 @@ public class OptionalProgramRequirementCode extends BaseModel {
 	private String optProReqCode; 
 	private String label; 
 	private String description;
-	private String requirementTypeCode;
+	private RequirementTypeCode requirementTypeCode;
 	private String requiredCredits;
 	private String notMetDesc;
 	private String requiredLevel;
