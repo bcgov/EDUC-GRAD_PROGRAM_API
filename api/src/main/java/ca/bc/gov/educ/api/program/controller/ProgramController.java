@@ -24,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.service.ProgramService;
 import ca.bc.gov.educ.api.program.util.ApiResponseModel;
@@ -46,7 +49,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping(EducGradProgramApiConstants.GRAD_PROGRAM_API_ROOT_MAPPING)
 @EnableResourceServer
-@OpenAPIDefinition(info = @Info(title = "API for Program Management Data.", description = "This API contains endpoints for Program Management Functionalities.", version = "1"), security = {@SecurityRequirement(name = "OAUTH2", scopes = {"READ_GRAD_PROGRAM_SETS_DATA","READ_GRAD_PROGRAM_RULES_DATA","READ_GRAD_PROGRAM_CODE_DATA","READ_GRAD_SPECIAL_CASE_DATA","READ_GRAD_LETTER_GRADE_DATA"})})
+@OpenAPIDefinition(info = @Info(title = "API for Program Management Data.", description = "This API contains endpoints for Program Management Functionalities.", version = "1"), security = {@SecurityRequirement(name = "OAUTH2", scopes = {"READ_GRAD_PROGRAM_RULES_DATA","READ_GRAD_PROGRAM_CODE_DATA"})})
 public class ProgramController {
 
     private static Logger logger = LoggerFactory.getLogger(ProgramController.class);
@@ -62,10 +65,8 @@ public class ProgramController {
     
     private static final String PROGRAM_CODE="Program Code";
     private static final String PROGRAM_NAME="Program Name";
-    private static final String SPECIAL_PROGRAM_ID="Special Program ID";
-    private static final String REQUIREMENT_TYPE = "Requirement Type";
+    private static final String OPTIONAL_PROGRAM_ID="Optional Program ID";
     private static final String RULE_CODE = "Rule Code";
-    private static final String REQUIREMENT_NAME = "Requirement Name";
 
     @GetMapping(value=EducGradProgramApiConstants.GET_ALL_PROGRAM_MAPPING, produces= {"application/json"})
     @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM)
@@ -190,7 +191,7 @@ public class ProgramController {
         return response.DELETE(programService.deleteGradProgramRules(UUID.fromString(programRuleID)));
     }
     
-    /*
+    
     @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIFIC_PROGRAM_RULES_BY_RULE)
     @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
     @Operation(summary = "Find Specific Rule Details", description = "Get a Specific Rule Detail", tags = { "Program Rules" })
@@ -200,208 +201,128 @@ public class ProgramController {
         return programService.getSpecificRuleDetails(ruleCode);
     }
     
-    @GetMapping(EducGradProgramApiConstants.GET_REQUIREMENT_BY_REQUIREMENT_TYPE)
-    @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
-    @Operation(summary = "Check for Requirement Type", description = "Check if Requirement Type is valid", tags = { "Program Rules" })
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_MAPPING_BY_ID)
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Find Optional Program", description = "Get Optional Program By ID", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public Boolean getRequirementByRequirementType(@PathVariable String typeCode) { 
-    	logger.debug("getRequirementByRequirementType : ");
-        return programService.getRequirementByRequirementType(typeCode);
-    } 
-    
-    
-    
-    @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_MAPPING_BY_ID)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Find Special Program", description = "Get Special Program By ID", tags = { "Special Programs" })
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<GradSpecialProgram> getAllSpecialProgramsByID(@PathVariable String specialProgramID) { 
+    public ResponseEntity<OptionalProgram> getAllSpecialProgramsByID(@PathVariable String optionalProgramID) { 
     	logger.debug("getAllSpecialProgramsByID : ");
-        return response.GET(programService.getSpecialProgramByID(UUID.fromString(specialProgramID)));
+        return response.GET(programService.getSpecialProgramByID(UUID.fromString(optionalProgramID)));
     }
     
-    @GetMapping(value=EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_MAPPING, produces= {"application/json"})
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Find All Special Programs", description = "Get All Special Programs", tags = { "Special Programs" })
+    @GetMapping(value=EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_MAPPING, produces= {"application/json"})
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Find All Optional Programs", description = "Get All Optional Programs", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
-    public ResponseEntity<List<GradSpecialProgram>> getAllSpecialPrograms() { 
+    public ResponseEntity<List<OptionalProgram>> getAllSpecialPrograms() { 
     	logger.debug("getAllSpecialPrograms : ");
-    	List<GradSpecialProgram> specialProgramList = programService.getAllSpecialProgramList();
+    	List<OptionalProgram> specialProgramList = programService.getAllSpecialProgramList();
     	if(!specialProgramList.isEmpty()) {
-    		return response.GET(specialProgramList,new TypeToken<List<GradSpecialProgram>>() {}.getType());
+    		return response.GET(specialProgramList,new TypeToken<List<OptionalProgram>>() {}.getType());
     	}
     	return response.NO_CONTENT();
     }
+   
     
-    @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_BY_PROGRAM_CODE_MAPPING)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Find All Special Programs by Program", description = "Get All Special Programs by Program Code", tags = { "Special Programs" })
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
-    public ResponseEntity<List<GradSpecialProgram>> getAllSpecialPrograms(@PathVariable String programCode) { 
-    	logger.debug("getAllSpecialPrograms : ");
-    	List<GradSpecialProgram> specialProgramList = programService.getAllSpecialProgramList(programCode);
-    	if(!specialProgramList.isEmpty()) {
-    		return response.GET(specialProgramList,new TypeToken<List<GradSpecialProgram>>() {}.getType());
-    	}
-    	return response.NO_CONTENT();
-    }
-    
-    
-    
-    @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_BY_PROGRAM_CODE_AND_SPECIAL_PROGRAM_MAPPING)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Find a Special Programs by Program and special program", description = "Get a Special Programs by Program Code and special program code", tags = { "Special Programs" })
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<GradSpecialProgram> getSpecialPrograms(@PathVariable String programCode,@PathVariable String specialProgramCode) { 
-    	logger.debug("getSpecialPrograms : ");
-        return response.GET(programService.getSpecialProgram(programCode,specialProgramCode));
-    }
-    
-    @PostMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_MAPPING)
-    @PreAuthorize(PermissionsContants.CREATE_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Create Special Program", description = "Create Special Program", tags = { "Special Programs" })
+    @PostMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_MAPPING)
+    @PreAuthorize(PermissionsContants.CREATE_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Create Optional Program", description = "Create Optional Program", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    public ResponseEntity<ApiResponseModel<GradSpecialProgram>> createGradSpecialPrograms(@Valid @RequestBody GradSpecialProgram gradSpecialProgram) { 
-    	logger.debug("createGradSpecailPrograms : ");
-    	validation.requiredField(gradSpecialProgram.getProgramCode(), PROGRAM_CODE);
-       	validation.requiredField(gradSpecialProgram.getSpecialProgramCode(), "Special Program Code");
-       	validation.requiredField(gradSpecialProgram.getSpecialProgramName(), "Special Program Name");
+    public ResponseEntity<ApiResponseModel<OptionalProgram>> createGradSpecialPrograms(@Valid @RequestBody OptionalProgram optionalProgram) { 
+    	logger.debug("createGradSpecialPrograms : ");
+    	validation.requiredField(optionalProgram.getGraduationProgramCode(), PROGRAM_CODE);
+       	validation.requiredField(optionalProgram.getOptProgramCode(), "Optional Program Code");
+       	validation.requiredField(optionalProgram.getOptionalProgramName(), "Optional Program Name");
     	if(validation.hasErrors()) {
     		validation.stopOnErrors();
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-        return response.CREATED(programService.createGradSpecialProgram(gradSpecialProgram));
+        return response.CREATED(programService.createGradSpecialProgram(optionalProgram));
     }
     
-    @PutMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_MAPPING)
-    @PreAuthorize(PermissionsContants.UPDATE_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Update Special Program", description = "Update Special Program", tags = { "Special Programs" })
+    @PutMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_MAPPING)
+    @PreAuthorize(PermissionsContants.UPDATE_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Update Optional Program", description = "Update Optional Program", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    public ResponseEntity<ApiResponseModel<GradSpecialProgram>> updateGradSpecialPrograms(@Valid @RequestBody GradSpecialProgram gradSpecialProgram) { 
-    	logger.info("updateGradProgramsss : ");
-    	validation.requiredField(gradSpecialProgram.getProgramCode(), PROGRAM_CODE);
-       	validation.requiredField(gradSpecialProgram.getSpecialProgramCode(), "Special Program Code");
-       	validation.requiredField(gradSpecialProgram.getSpecialProgramName(), "Special Program Name");
+    public ResponseEntity<ApiResponseModel<OptionalProgram>> updateGradSpecialPrograms(@Valid @RequestBody OptionalProgram optionalProgram) { 
+    	logger.info("updateGradSpecialPrograms : ");
+    	validation.requiredField(optionalProgram.getGraduationProgramCode(), PROGRAM_CODE);
+       	validation.requiredField(optionalProgram.getOptProgramCode(), "Optional Program Code");
+       	validation.requiredField(optionalProgram.getOptionalProgramName(), "Optional Program Name");
     	if(validation.hasErrors()) {
     		validation.stopOnErrors();
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-        return response.UPDATED(programService.updateGradSpecialPrograms(gradSpecialProgram));
+        return response.UPDATED(programService.updateGradSpecialPrograms(optionalProgram));
     }
     
-    @DeleteMapping(EducGradProgramApiConstants.DELETE_SPECIAL_PROGRAM_MAPPING)
-    @PreAuthorize(PermissionsContants.DELETE_GRAD_SPECIAL_PROGRAM)
-    @Operation(summary = "Delete Special Program", description = "Delete Special Program", tags = { "Special Programs" })
+    @DeleteMapping(EducGradProgramApiConstants.DELETE_OPTIONAL_PROGRAM_MAPPING)
+    @PreAuthorize(PermissionsContants.DELETE_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Delete Optional Program", description = "Delete Optional Program", tags = { "Optioanal Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
-    public ResponseEntity<Void> deleteGradSpecialPrograms(@PathVariable(value = "specialProgramID", required = true) String specialProgramID) { 
+    public ResponseEntity<Void> deleteGradSpecialPrograms(@PathVariable(value = "optionalProgramID", required = true) String optionalProgramID) { 
     	logger.debug("deleteGradPrograms : ");
-    	validation.requiredField(specialProgramID, SPECIAL_PROGRAM_ID);
+    	validation.requiredField(optionalProgramID, OPTIONAL_PROGRAM_ID);
     	if(validation.hasErrors()) {
     		validation.stopOnErrors();
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-        return response.DELETE(programService.deleteGradSpecialPrograms(UUID.fromString(specialProgramID)));
+        return response.DELETE(programService.deleteGradSpecialPrograms(UUID.fromString(optionalProgramID)));
     }
     
-    @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_RULES)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Get Special Program Rules", description = "Get Special Program Rules", tags = { "Special Program Rules" })
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
-    public ResponseEntity<List<GradSpecialProgramRule>> getAllSpecialProgramRules(
-    		@RequestParam(value = "specialProgramID", required = true) String specialProgramID, 
-            @RequestParam(value = "requirementType", required = false) String requirementType) { 
-    	logger.debug("get All Special Program Rules : ");
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	List<GradSpecialProgramRule> programRuleList = programService.getAllSpecialProgramRuleList(UUID.fromString(specialProgramID),requirementType,accessToken);
-    	if(!programRuleList.isEmpty()) {
-    		return response.GET(programRuleList,new TypeToken<List<GradSpecialProgramRule>>() {}.getType());
-    	}
-    	return response.NO_CONTENT();
-    }
-    
-    @PostMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_RULES)
-    @PreAuthorize(PermissionsContants.CREATE_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Create Special Program Rules", description = "Create Special Program Rules", tags = { "Special Program Rules" })
+    @PostMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_RULES)
+    @PreAuthorize(PermissionsContants.CREATE_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Create Optional Program Rules", description = "Create Optional Program Rules", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    public ResponseEntity<ApiResponseModel<GradSpecialProgramRule>> createGradSpecialProgramRules(@Valid @RequestBody GradSpecialProgramRule gradSpecialProgramRule) { 
+    public ResponseEntity<ApiResponseModel<OptionalProgramRequirement>> createGradSpecialProgramRules(@Valid @RequestBody OptionalProgramRequirement optionalProgramRequirement) { 
     	logger.debug("createGradSpecialProgramRules : ");
-    	validation.requiredField(gradSpecialProgramRule.getSpecialProgramID(), SPECIAL_PROGRAM_ID);
-    	validation.requiredField(gradSpecialProgramRule.getRequirementType(), REQUIREMENT_TYPE);
-    	validation.requiredField(gradSpecialProgramRule.getRuleCode(), RULE_CODE);
-    	validation.requiredField(gradSpecialProgramRule.getRequirementName(), REQUIREMENT_NAME);
+    	validation.requiredField(optionalProgramRequirement.getOptionalProgramID(), OPTIONAL_PROGRAM_ID);
+    	validation.requiredField(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(), RULE_CODE);
     	if(validation.hasErrors()) {
     		validation.stopOnErrors();
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	return response.CREATED(programService.createGradSpecialProgramRules(gradSpecialProgramRule,accessToken));
+    	return response.CREATED(programService.createGradSpecialProgramRules(optionalProgramRequirement));
     }
     
-    @PutMapping(EducGradProgramApiConstants.GET_ALL_SPECIAL_PROGRAM_RULES)
-    @PreAuthorize(PermissionsContants.UPDATE_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Update Special Program Rules", description = "Update Special Program Rules", tags = { "Special Program Rules" })
+    @PutMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_RULES)
+    @PreAuthorize(PermissionsContants.UPDATE_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Update Optional Program Rules", description = "Update Optional Program Rules", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    public ResponseEntity<ApiResponseModel<GradSpecialProgramRule>> updateGradSpecialProgramRules(@Valid @RequestBody GradSpecialProgramRule gradSpecialProgramRule) { 
+    public ResponseEntity<ApiResponseModel<OptionalProgramRequirement>> updateGradSpecialProgramRules(@Valid @RequestBody OptionalProgramRequirement optionalProgramRequirement) { 
     	logger.debug("updateGradProgramRules : ");
-    	validation.requiredField(gradSpecialProgramRule.getSpecialProgramID(), SPECIAL_PROGRAM_ID);
-    	validation.requiredField(gradSpecialProgramRule.getRequirementType(), REQUIREMENT_TYPE);
-    	validation.requiredField(gradSpecialProgramRule.getRuleCode(), RULE_CODE);
-    	validation.requiredField(gradSpecialProgramRule.getRequirementName(), REQUIREMENT_NAME);
+    	validation.requiredField(optionalProgramRequirement.getOptionalProgramID(), OPTIONAL_PROGRAM_ID);
+    	validation.requiredField(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(), RULE_CODE);
     	if(validation.hasErrors()) {
     		validation.stopOnErrors();
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	return response.UPDATED(programService.updateGradSpecialProgramRules(gradSpecialProgramRule,accessToken));
+    	return response.UPDATED(programService.updateGradSpecialProgramRules(optionalProgramRequirement));
     }
     
-    @DeleteMapping(EducGradProgramApiConstants.DELETE_SPECIAL_PROGRAM_RULES_MAPPING)
-    @PreAuthorize(PermissionsContants.DELETE_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Delete Special Program Rule", description = "Delete Special Program Rule", tags = { "Special Program Rules" })
+    @DeleteMapping(EducGradProgramApiConstants.DELETE_OPTIONAL_PROGRAM_RULES_MAPPING)
+    @PreAuthorize(PermissionsContants.DELETE_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Delete Optional Program Rule", description = "Delete Optional Program Rule", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
     public ResponseEntity<Void> deleteGradSpecialProgramRules(@PathVariable(value = "programRuleID", required = true) String programRuleID) { 
     	logger.debug("deleteGradProgramRules : ");    	
         return response.DELETE(programService.deleteGradSpecialProgramRules(UUID.fromString(programRuleID)));
     }
     
-    @GetMapping(EducGradProgramApiConstants.GET_SPECIAL_PROGRAM_RULES_BY_PROGRAM_CODE_AND_SPECIAL_PROGRAM_CODE)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Find Special Program Rules by Program Code and Special Program Code and Requirement Type", description = "Get Special Program Rules by Program Code and Special Program Code and Requirement Type", tags = { "Special Program Rules" })
+    @GetMapping(EducGradProgramApiConstants.GET_OPTIONAL_PROGRAM_RULES_BY_PROGRAM_CODE_AND_OPTIONAL_PROGRAM_CODE_ONLY)
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Find Optional Program Rules by Program Code and Optional Program Code", description = "Get Optional Program Rules by Program Code and Optional Program Code", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
-    public ResponseEntity<List<GradSpecialProgramRule>> getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(
+    public ResponseEntity<List<OptionalProgramRequirement>> getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(
     		@PathVariable(value = "programCode", required = true) String programCode, 
-    		@PathVariable(value = "specialProgramCode", required = true) String specialProgramCode,
-    		@PathVariable(value = "requirementType", required = true) String requirementType) { 
-    	logger.debug("get Special Program Rules By Program Code And Special Program Code : ");
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	List<GradSpecialProgramRule> programRuleList = programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,specialProgramCode,requirementType,accessToken);
+    		@PathVariable(value = "optionalProgramCode", required = true) String optionalProgramCode) { 
+    	logger.debug("get Optional Program Rules By Program Code And Optional Program Code : ");
+    	List<OptionalProgramRequirement> programRuleList = programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,optionalProgramCode);
     	if(!programRuleList.isEmpty()) {
-    		return response.GET(programRuleList,new TypeToken<List<GradSpecialProgramRule>>() {}.getType());
+    		return response.GET(programRuleList,new TypeToken<List<OptionalProgramRequirement>>() {}.getType());
     	}
     	return response.NO_CONTENT();
     }
-    
-    @GetMapping(EducGradProgramApiConstants.GET_SPECIAL_PROGRAM_RULES_BY_PROGRAM_CODE_AND_SPECIAL_PROGRAM_CODE_ONLY)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Find Special Program Rules by Program Code and Special Program Code", description = "Get Special Program Rules by Program Code and Special Program Code", tags = { "Special Program Rules" })
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
-    public ResponseEntity<List<GradSpecialProgramRule>> getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(
-    		@PathVariable(value = "programCode", required = true) String programCode, 
-    		@PathVariable(value = "specialProgramCode", required = true) String specialProgramCode) { 
-    	logger.debug("get Special Program Rules By Program Code And Special Program Code : ");
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	List<GradSpecialProgramRule> programRuleList = programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,specialProgramCode,null,accessToken);
-    	if(!programRuleList.isEmpty()) {
-    		return response.GET(programRuleList,new TypeToken<List<GradSpecialProgramRule>>() {}.getType());
-    	}
-    	return response.NO_CONTENT();
-    }
-    */
     
     @GetMapping(value=EducGradProgramApiConstants.GET_PROGRAM_RULES,produces= {"application/json"})
     @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
@@ -416,22 +337,29 @@ public class ProgramController {
     	return response.NO_CONTENT();
     }
     
-    /*
-    @GetMapping(EducGradProgramApiConstants.GET_SPECIAL_PROGRAM_RULES)
-    @PreAuthorize(PermissionsContants.READ_GRAD_SPECIAL_PROGRAM_RULES)
-    @Operation(summary = "Get all Special Program Rules", description = "Get all Special Program Rules", tags = { "Special Program Rules" })
+    
+    @GetMapping(EducGradProgramApiConstants.GET_OPTIONAL_PROGRAM_RULES)
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM_RULES)
+    @Operation(summary = "Get all Optional Program Rules", description = "Get all Optional Program Rules", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
-    public ResponseEntity<List<GradSpecialProgramRule>> getAllSpecialProgramRules() { 
-    	logger.debug("get All Special Program Rules : ");
-    	OAuth2AuthenticationDetails auth = (OAuth2AuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails(); 
-    	String accessToken = auth.getTokenValue();
-    	List<GradSpecialProgramRule> programRuleList = programService.getAllSpecialProgramRulesList(accessToken);
+    public ResponseEntity<List<OptionalProgramRequirement>> getAllSpecialProgramRules() { 
+    	logger.debug("get All Optional Program Rules : ");
+    	List<OptionalProgramRequirement> programRuleList = programService.getAllSpecialProgramRulesList();
     	if(!programRuleList.isEmpty()) {
-    		return response.GET(programRuleList,new TypeToken<List<GradSpecialProgramRule>>() {}.getType());
+    		return response.GET(programRuleList,new TypeToken<List<OptionalProgramRequirement>>() {}.getType());
     	}
     	return response.NO_CONTENT();
     }
-    */
+    
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_BY_PROGRAM_CODE_AND_OPTIONAL_PROGRAM_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM)
+    @Operation(summary = "Find a Optional Programs by Program and Optional program", description = "Get a Optional Programs by Program Code and Optional program code", tags = { "Special Programs" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<OptionalProgram> getSpecialPrograms(@PathVariable String programCode,@PathVariable String optionalProgramCode) { 
+    	logger.debug("getSpecialPrograms : ");
+        return response.GET(programService.getSpecialProgram(programCode,optionalProgramCode));
+    }
+    
     
     
 }

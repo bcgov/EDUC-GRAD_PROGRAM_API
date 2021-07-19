@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementCodeEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,5 +14,5 @@ public class OptionalProgramRequirement extends BaseModel {
 
 	private UUID optionalProgramRequirementID; 
 	private UUID optionalProgramID; 
-	private OptionalProgramRequirementCodeEntity optionalProgramRequirementCode;
+	private OptionalProgramRequirementCode optionalProgramRequirementCode;
 }

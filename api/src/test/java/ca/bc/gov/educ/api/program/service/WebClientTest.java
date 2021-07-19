@@ -29,6 +29,7 @@ import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
+import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
 import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
@@ -67,16 +68,18 @@ public class WebClientTest {
 	
     @MockBean
 	private ProgramRequirementRepository programRequirementRepository;
+    
+    @MockBean
+	private ProgramRequirementCodeRepository programRequirementCodeRepository;
 	
 	
 	
-	@Before
+    @Before
     public void setUp() {
         openMocks(this);
+        programRequirementCodeRepository.save(createProgramRequirementCode());
     }
-
     
-
 	@After
     public void tearDown() {
 
@@ -109,21 +112,8 @@ public class WebClientTest {
 		gradProgramRule.setProgramRequirementCode(code);
 		ProgramRequirementEntity ruleEntity = new ProgramRequirementEntity();
     	ruleEntity.setProgramRequirementID(new UUID(1,1));
-		ruleEntity.setGraduationProgramCode("2018-EN");
-		ProgramRequirementCodeEntity codeE = new ProgramRequirementCodeEntity();
-		codeE.setProReqCode("100");
-		ruleEntity.setProgramRequirementCode(codeE);
-		String requirementType = "M";
-		GradRequirementTypes reqType = new GradRequirementTypes();
-    	reqType.setCode("M");
-    	reqType.setDescription("Match");
-    	when(this.webClient.get()).thenReturn(this.requestHeadersUriMock);
-    	when(this.requestHeadersUriMock.uri(String.format(constants.getGradRequirementTypeByCode(), requirementType))).thenReturn(this.requestHeadersMock);
-        when(this.requestHeadersMock.headers(any(Consumer.class))).thenReturn(this.requestHeadersMock);
-        when(this.requestHeadersMock.retrieve()).thenReturn(this.responseMock);
-        when(this.responseMock.bodyToMono(GradRequirementTypes.class)).thenReturn(monoResponse);
-        when(this.monoResponse.block()).thenReturn(reqType); 
-        
+		ruleEntity.setGraduationProgramCode("2018-EN"); 
+		ruleEntity.setProgramRequirementCode(programRequirementCodeRepository.getOne(gradProgramRule.getProgramRequirementCode().getProReqCode()));
         
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(null);
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
@@ -204,7 +194,7 @@ public class WebClientTest {
     	ruleEntity.setProgramRequirementID(new UUID(1,1));
 		ruleEntity.setGraduationProgramCode("2018-EN");
 		ProgramRequirementCodeEntity codeE = new ProgramRequirementCodeEntity();
-		codeE.setProReqCode("100");
+		codeE.setProReqCode("101");
 		ruleEntity.setProgramRequirementCode(codeE);      
         Mockito.when(programRequirementRepository.findById(gradProgramRule.getProgramRequirementID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(new UUID(1, 1));
@@ -541,5 +531,13 @@ public class WebClientTest {
 		programService.getAllSpecialProgramRulesList("accessToken");
     }
     */
+    
+    private ProgramRequirementCodeEntity createProgramRequirementCode() {
+    	ProgramRequirementCodeEntity obj = new ProgramRequirementCodeEntity();
+		obj.setProReqCode("100");
+		obj.setLabel("SASD");
+		obj.setRequirementCategory("C");
+		return obj;
+	}
 }
 

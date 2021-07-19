@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
-@Table(name = "OPTIOANL_PROGRAM_RQMT_CODE")
+@Table(name = "OPTIONAL_PROGRAM_RQMT_CODE")
 @EqualsAndHashCode(callSuper=false)
 public class OptionalProgramRequirementCodeEntity  extends BaseEntity {
    
