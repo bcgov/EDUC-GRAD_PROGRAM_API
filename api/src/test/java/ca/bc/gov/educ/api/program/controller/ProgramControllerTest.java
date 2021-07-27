@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
+import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
+import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
@@ -437,4 +439,119 @@ public class ProgramControllerTest {
 		Mockito.when(programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,specialProgramCode)).thenReturn(new ArrayList<>());
 		programController.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode);
 	}
+	
+	@Test
+	public void testgetAllProgramsRules() {		
+		List<ProgramRequirement> list = new ArrayList<ProgramRequirement>();
+		ProgramRequirement obj = new ProgramRequirement();
+		obj.setGraduationProgramCode("AB");
+		ProgramRequirementCode code = new ProgramRequirementCode();
+		code.setProReqCode("100");
+		obj.setProgramRequirementCode(code);
+		list.add(obj);
+		Mockito.when(programService.getAllProgramRulesList()).thenReturn(list);
+		programController.getAllProgramsRules();
+	}
+	
+	@Test
+	public void testgetAllProgramsRules_empty() {		
+		Mockito.when(programService.getAllProgramRulesList()).thenReturn(new ArrayList<ProgramRequirement>());
+		programController.getAllProgramsRules();
+	}
+	
+	@Test
+	public void testgetAllProgramRequirementCode() {		
+		List<ProgramRequirementCode> list = new ArrayList<ProgramRequirementCode>();
+		ProgramRequirementCode obj = new ProgramRequirementCode();
+		obj.setProReqCode("100");
+		list.add(obj);
+		Mockito.when(programService.getAllProgramRequirementCodeList()).thenReturn(list);
+		programController.getAllProgramRequirementCode();
+	}
+	
+	@Test
+	public void testgetAllProgramRequirementCode_empty() {		
+		Mockito.when(programService.getAllProgramRequirementCodeList()).thenReturn(new ArrayList<ProgramRequirementCode>());
+		programController.getAllProgramRequirementCode();
+	}
+	
+	@Test
+	public void testgetAllOptionalProgramRequirementCode() {		
+		List<OptionalProgramRequirementCode> list = new ArrayList<OptionalProgramRequirementCode>();
+		OptionalProgramRequirementCode obj = new OptionalProgramRequirementCode();
+		obj.setOptProReqCode("100");
+		list.add(obj);
+		Mockito.when(programService.getAllOptionalProgramRequirementCodeList()).thenReturn(list);
+		programController.getAllOptionalProgramRequirementCode();
+	}
+	
+	@Test
+	public void testgetAllOptionalProgramRequirementCode_empty() {		
+		Mockito.when(programService.getAllOptionalProgramRequirementCodeList()).thenReturn(new ArrayList<OptionalProgramRequirementCode>());
+		programController.getAllOptionalProgramRequirementCode();
+	}
+	
+	@Test
+	public void testGetAllAlgorithmData() {
+		String programCode="2018-EN";
+		String optionalProgramCode="FI";
+		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
+		List<ProgramRequirement> list = new ArrayList<ProgramRequirement>();
+		ProgramRequirement obj = new ProgramRequirement();
+		obj.setGraduationProgramCode("AB");
+		ProgramRequirementCode code = new ProgramRequirementCode();
+		code.setProReqCode("100");
+		obj.setProgramRequirementCode(code);
+		list.add(obj);
+		data.setProgramRules(list);
+		
+		List<OptionalProgramRequirement> listOptional = new ArrayList<OptionalProgramRequirement>();
+		OptionalProgramRequirement objs = new OptionalProgramRequirement();
+		objs.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramRequirementCode codes = new OptionalProgramRequirementCode();
+		codes.setOptProReqCode("100");
+		objs.setOptionalProgramRequirementCode(codes);
+		listOptional.add(objs);
+		
+		data.setOptionalProgramRules(listOptional);
+		
+		Mockito.when(programService.getAllAlgorithmData(programCode,optionalProgramCode)).thenReturn(data);
+		programController.getAllAlgorithmData(programCode, optionalProgramCode);
+	}
+	
+	@Test
+	public void testGetAllCareerProgramCodeList() {
+		List<CareerProgram> gradCareerProgramList = new ArrayList<>();
+		CareerProgram obj = new CareerProgram();
+		obj.setCode("DC");
+		obj.setDescription("Data Correction by School");
+		gradCareerProgramList.add(obj);
+		obj = new CareerProgram();
+		obj.setCode("CC");
+		obj.setDescription("Courses not complete");
+		gradCareerProgramList.add(obj);
+		Mockito.when(programService.getAllCareerProgramCodeList()).thenReturn(gradCareerProgramList);
+		programController.getAllCareerPrograms();
+		Mockito.verify(programService).getAllCareerProgramCodeList();
+	}
+	
+	@Test
+	public void testGetSpecificCareerProgramCode() {
+		String requirementType = "DC";
+		CareerProgram obj = new CareerProgram();
+		obj.setCode("DC");
+		obj.setDescription("Data Correction by School");
+		Mockito.when(programService.getSpecificCareerProgramCode(requirementType)).thenReturn(obj);
+		programController.getSpecificCareerProgramCode(requirementType);
+		Mockito.verify(programService).getSpecificCareerProgramCode(requirementType);
+	}
+	
+	@Test
+	public void testGetSpecificCareerProgramCode_noContent() {
+		String requirementType = "AB";	
+		Mockito.when(programService.getSpecificCareerProgramCode(requirementType)).thenReturn(null);
+		programController.getSpecificCareerProgramCode(requirementType);
+		Mockito.verify(programService).getSpecificCareerProgramCode(requirementType);
+	}
+	
 }

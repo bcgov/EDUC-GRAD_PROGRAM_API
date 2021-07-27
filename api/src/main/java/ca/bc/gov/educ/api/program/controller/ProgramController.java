@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
+import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
@@ -386,6 +388,39 @@ public class ProgramController {
     		return response.GET(programReqCodeList,new TypeToken<List<OptionalProgramRequirementCode>>() {}.getType());
     	}
     	return response.NO_CONTENT();
+    }
+    
+    @GetMapping(EducGradProgramApiConstants.GET_DATA_FOR_ALGORITHM_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_ALGORITHM_DATA)
+    @Operation(summary = "Read All  Data required by Grad Algorithm", description = "Read All  Data required by Grad Algorithm", tags = { "Algorithm" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<GradProgramAlgorithmData> getAllAlgorithmData(@RequestParam(value = "programCode", required = true) String programCode,@RequestParam(value = "optionalProgramCode", required = false) String optionalProgramCode) { 
+    	logger.debug("getAllAlgorithmData : ");
+        return response.GET(programService.getAllAlgorithmData(programCode,optionalProgramCode));
+    }
+    
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_GRAD_CAREER_PROGRAM_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_CAREER_PROGRAM)
+    @Operation(summary = "Find all Career Program", description = "Get all Career Program", tags = {"Career Program"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<List<CareerProgram>> getAllCareerPrograms() {
+        logger.debug("getAllPrograms : ");
+        return response.GET(programService.getAllCareerProgramCodeList());
+    }
+
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_GRAD_CAREER_PROGRAM_BY_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_CAREER_PROGRAM)
+    @Operation(summary = "Find a Career Program", description = "Get a Career Program", tags = {"Career Program"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "204", description = "NO CONTENT")})
+    public ResponseEntity<CareerProgram> getSpecificCareerProgramCode(@PathVariable String cpCode) {
+        logger.debug("getSpecificCareerProgramCode : ");
+        CareerProgram gradResponse = programService.getSpecificCareerProgramCode(cpCode);
+        if (gradResponse != null) {
+            return response.GET(gradResponse);
+        } else {
+            return response.NO_CONTENT();
+        }
     }
     
     

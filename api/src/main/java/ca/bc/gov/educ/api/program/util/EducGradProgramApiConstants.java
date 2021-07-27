@@ -24,7 +24,7 @@ public class EducGradProgramApiConstants {
     public static final String GET_PROGRAM_MAPPING = "/programs/{programCode}";
     public static final String DELETE_PROGRAM_RULES_MAPPING = "/programrules/{programRuleID}";
     public static final String DELETE_OPTIONAL_PROGRAM_RULES_MAPPING = "/optionalprogramrules/{programRuleID}";
-    public static final String GET_ALL_OPTIONAL_PROGRAM_MAPPING_BY_ID = "/optioanalprograms/id/{optionalProgramID}";
+    public static final String GET_ALL_OPTIONAL_PROGRAM_MAPPING_BY_ID = "/optionalprograms/id/{optionalProgramID}";
     
     public static final String GET_ALL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/programrequirementcode";
     public static final String GET_ALL_OPTIONAL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/optionapProgramrequirementcode";
@@ -39,6 +39,11 @@ public class EducGradProgramApiConstants {
     public static final String GET_OPTIONAL_PROGRAM_RULES_BY_PROGRAM_CODE_AND_OPTIONAL_PROGRAM_CODE_ONLY = "/optionalprogramrules/{programCode}/{optionalProgramCode}";
     public static final String GET_ALL_SPECIFIC_PROGRAM_RULES_BY_RULE = "/programrules/{ruleCode}";
     
+    public static final String GET_DATA_FOR_ALGORITHM_MAPPING = "/algorithmdata";
+    
+    public static final String GET_ALL_GRAD_CAREER_PROGRAM_MAPPING = "/careerprogram";
+    public static final String GET_ALL_GRAD_CAREER_PROGRAM_BY_CODE_MAPPING = "/careerprogram/{cpCode}";
+    
     //Default Attribute value constants
     public static final String DEFAULT_CREATED_BY = "API_GRAD_PROGRAM";
     public static final Date DEFAULT_CREATED_TIMESTAMP = new Date();
@@ -49,10 +54,4 @@ public class EducGradProgramApiConstants {
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     
     public static final String TRAX_DATE_FORMAT = "yyyyMM";
-    
-    @Value("${endpoint.code-api.program-type_by_code.url}")
-    private String gradProgramTypeByCode;
-    
-    @Value("${endpoint.code-api.requirement-type_by_code.url}")
-    private String gradRequirementTypeByCode;
 }

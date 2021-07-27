@@ -1,6 +1,7 @@
 package ca.bc.gov.educ.api.program.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,15 +21,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
+import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
+import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
+import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
@@ -63,7 +68,10 @@ public class ProgramServiceTest {
     private ProgramRequirementCodeRepository programRequirementCodeRepository; 
     
 	@MockBean
-    private OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository; 
+    private OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository;
+
+	@MockBean
+	private CareerProgramRepository gradCareerProgramRepository;
 	
 	@Autowired
 	GradValidation validation;
@@ -563,6 +571,92 @@ public class ProgramServiceTest {
 		gradProgramList.add(obj);
 		Mockito.when(optionalProgramRequirementCodeRepository.findAll()).thenReturn(gradProgramList);
 		programService.getAllOptionalProgramRequirementCodeList();
+	}
+	
+	@Test
+	public void testGetAllCareerProgramsCodeList() {
+		List<CareerProgramEntity> gradCareerProgramList = new ArrayList<>();
+		CareerProgramEntity obj = new CareerProgramEntity();
+		obj.setCode("AY");
+		obj.setDescription("Archaeology");
+		gradCareerProgramList.add(obj);
+		obj = new CareerProgramEntity();
+		obj.setCode("BE");
+		obj.setDescription("Business Education");
+		gradCareerProgramList.add(obj);
+		Mockito.when(gradCareerProgramRepository.findAll()).thenReturn(gradCareerProgramList);
+		programService.getAllCareerProgramCodeList();
+	}
+	
+	@Test
+	public void testGetSpecificCareerProgramCode() {
+		String cpcCode = "AY";
+		CareerProgram obj = new CareerProgram();
+		obj.setCode("AY");
+		obj.setDescription("Archaeology");
+		obj.toString();
+		CareerProgramEntity objEntity = new CareerProgramEntity();
+		objEntity.setCode("AY");
+		objEntity.setDescription("Archaeology");
+		Optional<CareerProgramEntity> ent = Optional.of(objEntity);
+		Mockito.when(gradCareerProgramRepository.findById(cpcCode)).thenReturn(ent);
+		programService.getSpecificCareerProgramCode(cpcCode);
+	}
+	
+	@Test
+	public void testGetSpecificCareerProgramCodeReturnsNull() {
+		String cpcCode = "AZ";
+		Mockito.when(gradCareerProgramRepository.findById(cpcCode)).thenReturn(Optional.empty());
+		programService.getSpecificCareerProgramCode(cpcCode);
+	}
+	
+	@Test
+	public void testGetAllAlgorithmData() {
+		String optionalProgramCode="FI";
+		String programCode="2018-EN";
+		
+		List<ProgramRequirementEntity> gradProgramRuleList = new ArrayList<ProgramRequirementEntity>();
+		ProgramRequirementEntity ruleObj = new ProgramRequirementEntity();
+		ruleObj.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity code = new ProgramRequirementCodeEntity();
+		code.setProReqCode("100");
+		ruleObj.setProgramRequirementCode(code);
+		gradProgramRuleList.add(ruleObj);
+		ruleObj = new ProgramRequirementEntity();
+		ruleObj.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity code2 = new ProgramRequirementCodeEntity();
+		code2.setProReqCode("200");
+		ruleObj.setProgramRequirementCode(code2);
+		gradProgramRuleList.add(ruleObj);
+    	Mockito.when(programRequirementRepository.findByGraduationProgramCode(programCode)).thenReturn(gradProgramRuleList);
+    	
+    	OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
+		gradSpecialProgramEntity.setGraduationProgramCode("2018-EN");
+		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradSpecialProgramEntity.setOptProgramCode("FI");
+		gradSpecialProgramEntity.setOptionalProgramName("French Immersion");
+		
+		List<OptionalProgramRequirementEntity> gradOptionalProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
+		OptionalProgramRequirementEntity ruleOptionalObj = new OptionalProgramRequirementEntity();
+		ruleOptionalObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramRequirementCodeEntity codeOp2 = new OptionalProgramRequirementCodeEntity();
+		codeOp2.setOptProReqCode("100");
+		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp2);
+		gradOptionalProgramRuleList.add(ruleOptionalObj);
+		ruleOptionalObj = new OptionalProgramRequirementEntity();
+		ruleOptionalObj.setOptionalProgramID(new UUID(2, 2));
+		OptionalProgramRequirementCodeEntity codeOp3 = new OptionalProgramRequirementCodeEntity();
+		codeOp3.setOptProReqCode("100");
+		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp3);
+		gradOptionalProgramRuleList.add(ruleOptionalObj);
+		
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradSpecialProgramEntity));
+		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradSpecialProgramEntity.getOptionalProgramID())).thenReturn(gradOptionalProgramRuleList);
+		
+		GradProgramAlgorithmData data = programService.getAllAlgorithmData(programCode, optionalProgramCode);
+		assertNotNull(data);
+		assertEquals(2, data.getOptionalProgramRules().size());
+    	
 	}
 	
 }

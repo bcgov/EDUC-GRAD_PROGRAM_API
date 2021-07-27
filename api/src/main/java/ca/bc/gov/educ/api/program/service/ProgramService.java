@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
+import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
@@ -29,16 +32,19 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
+import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
+import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
+import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
@@ -86,6 +92,12 @@ public class ProgramService {
 
     @Autowired
     private OptionalProgramTransformer optionalProgramTransformer;  
+    
+    @Autowired
+	private CareerProgramRepository gradCareerProgramRepository;
+
+	@Autowired
+	private CareerProgramTransformer gradCareerProgramTransformer;
     
     @Autowired
 	GradValidation validation;
@@ -417,6 +429,36 @@ public class ProgramService {
 	
 	public List<OptionalProgramRequirementCode> getAllOptionalProgramRequirementCodeList() {
 		return optionalProgramRequirementCodeTransformer.transformToDTO(optionalProgramRequirementCodeRepository.findAll()); 
+	}
+
+
+	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode) {
+		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
+		List<ProgramRequirement> programRules = getAllProgramRuleList(programCode);
+		data.setProgramRules(programRules);
+		if(StringUtils.isNotBlank(optionalProgramCode)) {
+			List<OptionalProgramRequirement> optionalProgramRules = getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, optionalProgramCode);
+			data.setOptionalProgramRules(optionalProgramRules);
+		}
+		return data;		
+	}
+	
+	@Transactional
+	public List<CareerProgram> getAllCareerProgramCodeList() {
+		List<CareerProgram> gradCareerProgramList = gradCareerProgramTransformer.transformToDTO(gradCareerProgramRepository.findAll());
+		Collections.sort(gradCareerProgramList, Comparator.comparing(CareerProgram::getCode));
+		return gradCareerProgramList;
+	}
+
+	@Transactional
+	public CareerProgram getSpecificCareerProgramCode(String cpc) {
+		Optional<CareerProgramEntity> entity = gradCareerProgramRepository
+				.findById(StringUtils.toRootUpperCase(cpc));
+		if (entity.isPresent()) {
+			return gradCareerProgramTransformer.transformToDTO(entity);
+		} else {
+			return null;
+		}
 	}
 	
 }
