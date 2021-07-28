@@ -3,6 +3,7 @@ package ca.bc.gov.educ.api.program.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,20 +23,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import ca.bc.gov.educ.api.program.model.dto.GradRequirementTypes;
+import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
+import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
+import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
+import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
-import ca.bc.gov.educ.api.program.model.entity.GradSpecialProgramRulesEntity;
+import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
+import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
+import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
+import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
+import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
+import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
+import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
+import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
 @Service
@@ -56,16 +72,36 @@ public class ProgramService {
     private ProgramRequirementCodeRepository programRequirementCodeRepository; 
     
     @Autowired
+    private OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository; 
+    
+    
+    @Autowired
     private OptionalProgramRequirementRepository optionalProgramRequirementRepository;  
 
     @Autowired
-    private OptionalProgramRequirementTransformer optionalProgramRequirementTransformer;    
+    private OptionalProgramRequirementTransformer optionalProgramRequirementTransformer; 
+    
+    @Autowired
+    private ProgramRequirementCodeTransformer programRequirementCodeTransformer; 
+    
+    @Autowired
+    private OptionalProgramRequirementCodeTransformer optionalProgramRequirementCodeTransformer; 
+    
+    @Autowired
+    private OptionalProgramRepository optionalProgramRepository;  
+
+    @Autowired
+    private OptionalProgramTransformer optionalProgramTransformer;  
+    
+    @Autowired
+	private CareerProgramRepository gradCareerProgramRepository;
+
+	@Autowired
+	private CareerProgramTransformer gradCareerProgramTransformer;
     
     @Autowired
 	GradValidation validation;
     
-    @Autowired
-	EducGradProgramApiConstants educGradProgramManagementApiConstants;
     
     @Value("${validation.value.requirementType}")
 	String errorStringRequirementTypeInvalid;
@@ -84,8 +120,6 @@ public class ProgramService {
     
 	private static final String CREATE_USER="createUser";
 	private static final String CREATE_DATE="createDate";
-	private static final String CREATE="create";
-	private static final String UPDATE="update";
     
     @Autowired
     RestTemplate restTemplate;
@@ -101,34 +135,34 @@ public class ProgramService {
         return graduationProgramCodeTransformer.transformToDTO(graduationProgramCodeRepository.findAll()); 
     }
 	
-    /*
+    
 	public List<GradRuleDetails> getSpecificRuleDetails(String ruleCode) {
 		List<GradRuleDetails> detailList = new ArrayList<>();
 		List<ProgramRequirement> gradProgramRule = programRequirementTransformer.transformToDTO(programRequirementRepository.findByRuleCode(ruleCode));
 		if(!gradProgramRule.isEmpty()) {
 			gradProgramRule.forEach(gpR -> {
 				GradRuleDetails details = new GradRuleDetails();
-				details.setRuleCode(gpR.getRuleCode());
-				details.setRequirementName(gpR.getRequirementName());			
-				details.setProgramCode(gpR.getProgramCode());
+				details.setRuleCode(gpR.getProgramRequirementCode().getProReqCode());
+				details.setRequirementName(gpR.getProgramRequirementCode().getLabel());			
+				details.setProgramCode(gpR.getGraduationProgramCode());
 				detailList.add(details);
 			});			
 		}
-		List<GradSpecialProgramRule> gradSpecialProgramRule = gradSpecialProgramRulesTransformer.transformToDTO(gradSpecialProgramRulesRepository.findByRuleCode(ruleCode));
+		List<OptionalProgramRequirement> gradSpecialProgramRule = optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findByRuleCode(ruleCode));
 		if(!gradSpecialProgramRule.isEmpty()) {
 			gradSpecialProgramRule.forEach(gpR -> {
 				GradRuleDetails details = new GradRuleDetails();
-				details.setRuleCode(gpR.getRuleCode());
-				details.setRequirementName(gpR.getRequirementName());	
-				GradSpecialProgram gradSpecialProgram = gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.findById(gpR.getSpecialProgramID()));
-				details.setProgramCode(gradSpecialProgram.getProgramCode());
-				details.setSpecialProgramCode(gradSpecialProgram.getSpecialProgramCode());
+				details.setRuleCode(gpR.getOptionalProgramRequirementCode().getOptProReqCode());
+				details.setRequirementName(gpR.getOptionalProgramRequirementCode().getLabel());	
+				OptionalProgram gradSpecialProgram = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(gpR.getOptionalProgramID()));
+				details.setProgramCode(gradSpecialProgram.getGraduationProgramCode());
+				details.setSpecialProgramCode(gradSpecialProgram.getOptProgramCode());
 				detailList.add(details);
 			});			
 		}
 		return detailList;
 	}
-	*/
+	
 	public GraduationProgramCode createGradProgram(GraduationProgramCode gradProgram) {
 		GraduationProgramCodeEntity toBeSavedObject = graduationProgramCodeTransformer.transformToEntity(gradProgram);
 		toBeSavedObject.setDisplayOrder(0);
@@ -188,14 +222,6 @@ public class ProgramService {
 			return programRequirementTransformer.transformToDTO(programRequirementRepository.save(toBeSavedObject));					
 		}
 	}
-	
-	public boolean validateRequirementType(String toBeSavedRequirementType, String existingRequirementType,String accessToken,String task) {
-		if(task.equalsIgnoreCase(CREATE) || !existingRequirementType.equalsIgnoreCase(toBeSavedRequirementType)) {
-			GradRequirementTypes reqTypes = webClient.get().uri(String.format(educGradProgramManagementApiConstants.getGradRequirementTypeByCode(),toBeSavedRequirementType)).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradRequirementTypes.class).block();
-			return reqTypes != null;
-		}
-		return true;
-	}
 
 	public ProgramRequirement updateGradProgramRules(@Valid ProgramRequirement gradProgramRule) {
 		ProgramRequirementEntity sourceObject = programRequirementTransformer.transformToEntity(gradProgramRule);
@@ -222,8 +248,8 @@ public class ProgramService {
 		return !sourceObject.getProgramRequirementCode().getProReqCode().equals(gradRuleEnity.getProgramRequirementCode().getProReqCode());		
 	}
 	
-	private boolean checkIfSpecialRuleCodeChanged(GradSpecialProgramRulesEntity gradRuleEnity, GradSpecialProgramRulesEntity sourceObject) {
-		return !sourceObject.getRuleCode().equals(gradRuleEnity.getRuleCode());
+	private boolean checkIfOptionalRuleCodeChanged(OptionalProgramRequirementEntity gradRuleEnity, OptionalProgramRequirementEntity sourceObject) {
+		return !sourceObject.getOptionalProgramRequirementCode().getOptProReqCode().equals(gradRuleEnity.getOptionalProgramRequirementCode().getOptProReqCode());
 	}
 
 	public int deleteGradProgramRules(UUID programRuleID) {
@@ -250,120 +276,96 @@ public class ProgramService {
 		return null;
 	}
 
-	/*
-	public GradSpecialProgram createGradSpecialProgram(@Valid GradSpecialProgram gradSpecialProgram) {
-		GradSpecialProgramEntity toBeSavedObject = gradSpecialProgramTransformer.transformToEntity(gradSpecialProgram);
-		Optional<GradSpecialProgramEntity> existingObjectCheck = gradSpecialProgramRepository.findByProgramCodeAndSpecialProgramCode(gradSpecialProgram.getProgramCode(),gradSpecialProgram.getSpecialProgramCode());
+	
+	public OptionalProgram createGradSpecialProgram(@Valid OptionalProgram optionalProgram) {
+		OptionalProgramEntity toBeSavedObject = optionalProgramTransformer.transformToEntity(optionalProgram);
+		Optional<OptionalProgramEntity> existingObjectCheck = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(optionalProgram.getGraduationProgramCode(),optionalProgram.getOptProgramCode());
 		if(existingObjectCheck.isPresent()) {
-			validation.addErrorAndStop(String.format("Special Program Code [%s] and Program Code [%s] already exists",gradSpecialProgram.getSpecialProgramCode(),gradSpecialProgram.getProgramCode()));
-			return gradSpecialProgram;			
+			validation.addErrorAndStop(String.format("Optioanl Program Code [%s] and Program Code [%s] already exists",optionalProgram.getOptProgramCode(),optionalProgram.getGraduationProgramCode()));
+			return optionalProgram;			
 		}else {
-			return gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.save(toBeSavedObject));
+			return optionalProgramTransformer.transformToDTO(optionalProgramRepository.save(toBeSavedObject));
 		}
 	}
 	
 	@Transactional
-	public GradSpecialProgram updateGradSpecialPrograms(GradSpecialProgram gradSpecialProgram) {
-		Optional<GradSpecialProgramEntity> gradSpecialProgramOptional = gradSpecialProgramRepository.findById(gradSpecialProgram.getId());
-		GradSpecialProgramEntity sourceObject = gradSpecialProgramTransformer.transformToEntity(gradSpecialProgram);
+	public OptionalProgram updateGradSpecialPrograms(OptionalProgram optionalProgram) {
+		Optional<OptionalProgramEntity> gradSpecialProgramOptional = optionalProgramRepository.findById(optionalProgram.getOptionalProgramID());
+		OptionalProgramEntity sourceObject = optionalProgramTransformer.transformToEntity(optionalProgram);
 		if(gradSpecialProgramOptional.isPresent()) {			
-			GradSpecialProgramEntity gradEnity = gradSpecialProgramOptional.get();
-			if(checkIfProgramCodeandSpecialPogramCodeChanged(gradEnity,sourceObject)) {
-				Optional<GradSpecialProgramEntity> existingObjectCheck = gradSpecialProgramRepository.findByProgramCodeAndSpecialProgramCode(gradSpecialProgram.getProgramCode(),gradSpecialProgram.getSpecialProgramCode());
+			OptionalProgramEntity gradEnity = gradSpecialProgramOptional.get();
+			if(checkIfProgramCodeandOptionalPogramCodeChanged(gradEnity,sourceObject)) {
+				Optional<OptionalProgramEntity> existingObjectCheck = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(optionalProgram.getGraduationProgramCode(),optionalProgram.getOptProgramCode());
 				if(existingObjectCheck.isPresent()) {
-					validation.addErrorAndStop(String.format("Special Program Code [%s] and Program Code [%s] already exists",gradSpecialProgram.getSpecialProgramCode(),gradSpecialProgram.getProgramCode()));
-					return gradSpecialProgram;			
+					validation.addErrorAndStop(String.format("Special Program Code [%s] and Program Code [%s] already exists",optionalProgram.getOptProgramCode(),optionalProgram.getGraduationProgramCode()));
+					return optionalProgram;			
 				}
 			}
-			BeanUtils.copyProperties(sourceObject,gradEnity,CREATED_BY,CREATED_TIMESTAMP);
-			return gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.save(gradEnity));
+			BeanUtils.copyProperties(sourceObject,gradEnity,CREATE_USER,CREATE_DATE);
+			return optionalProgramTransformer.transformToDTO(optionalProgramRepository.save(gradEnity));
 		}else {
-			validation.addErrorAndStop(String.format("Special Program ID [%s] does not exists",gradSpecialProgram.getId()));
-			return gradSpecialProgram;
+			validation.addErrorAndStop(String.format("Special Program ID [%s] does not exists",optionalProgram.getOptionalProgramID()));
+			return optionalProgram;
 		}
 	}
 	
-	private boolean checkIfProgramCodeandSpecialPogramCodeChanged(GradSpecialProgramEntity gradSpecialProgramEntity, GradSpecialProgramEntity sourceObject) {
-		return (!sourceObject.getProgramCode().equals(gradSpecialProgramEntity.getProgramCode()) || !sourceObject.getSpecialProgramCode().equals(gradSpecialProgramEntity.getSpecialProgramCode()));
+	private boolean checkIfProgramCodeandOptionalPogramCodeChanged(OptionalProgramEntity gradSpecialProgramEntity, OptionalProgramEntity sourceObject) {
+		return (!sourceObject.getGraduationProgramCode().equals(gradSpecialProgramEntity.getGraduationProgramCode()) || !sourceObject.getOptProgramCode().equals(gradSpecialProgramEntity.getOptProgramCode()));
 				
 	}
 
 	public int deleteGradSpecialPrograms(UUID specialProgramID) {
-		Optional<GradSpecialProgramEntity> gradSpecialProgramOptional = gradSpecialProgramRepository.findById(specialProgramID);
+		Optional<OptionalProgramEntity> gradSpecialProgramOptional = optionalProgramRepository.findById(specialProgramID);
 		if(gradSpecialProgramOptional.isPresent()) {
-			gradSpecialProgramRepository.deleteById(specialProgramID);
+			optionalProgramRepository.deleteById(specialProgramID);
 			return 1;
 		}else {
-			validation.addErrorAndStop("This Special Program ID does not exists.");
+			validation.addErrorAndStop("This Optional Program ID does not exists.");
 			return 0;			
 		}
 	}
-
-	public List<GradSpecialProgram> getAllSpecialProgramList(String programCode) {
-		return gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.findByProgramCode(programCode));
+	
+	public List<OptionalProgramRequirement>  getAllSpecialProgramRuleList(UUID specialProgramID) {
+        return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findByOptionalProgramID(specialProgramID));
 	}
 	
-	public List<GradSpecialProgramRule>  getAllSpecialProgramRuleList(UUID specialProgramID, String requirementType,String accessToken) {
-		if(StringUtils.isNotBlank(requirementType)) {
-    		GradRequirementTypes gradReqType = webClient.get().uri(String.format(educGradProgramManagementApiConstants.getGradRequirementTypeByCode(),requirementType)).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradRequirementTypes.class).block();
-			if(gradReqType == null) {
-				validation.addErrorAndStop(String.format(errorStringRequirementTypeInvalid,requirementType));
-	    	}
-        }
-        List<GradSpecialProgramRule> programRuleList = gradSpecialProgramRulesTransformer.transformToDTO(gradSpecialProgramRulesRepository.findBySpecialProgramIDAndRequirementType(specialProgramID,requirementType));   
-    	programRuleList.forEach(pR-> {
-    		GradRequirementTypes reqType = webClient.get().uri(String.format(educGradProgramManagementApiConstants.getGradRequirementTypeByCode(),pR.getRequirementType())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradRequirementTypes.class).block();
-    		pR.setRequirementTypeDesc(reqType.getDescription());
-    	});
-        return programRuleList;
-	}
-
-	public GradSpecialProgramRule createGradSpecialProgramRules(@Valid GradSpecialProgramRule gradSpecialProgramRule,
-			String accessToken) {
-		GradSpecialProgramRulesEntity toBeSavedObject = gradSpecialProgramRulesTransformer.transformToEntity(gradSpecialProgramRule);
-		UUID existingObjectCheck = gradSpecialProgramRulesRepository.findIdByRuleCode(gradSpecialProgramRule.getRuleCode(),gradSpecialProgramRule.getSpecialProgramID());
+	public OptionalProgramRequirement createGradSpecialProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
+		OptionalProgramRequirementEntity toBeSavedObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
+		UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optionalProgramRequirement.getOptionalProgramID());
 		if(existingObjectCheck != null) {
-			GradSpecialProgramEntity optional = gradSpecialProgramRepository.getOne(gradSpecialProgramRule.getSpecialProgramID());
-			validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Special Program Code [%s] and Program Code [%s] combination.",gradSpecialProgramRule.getRuleCode(),optional.getSpecialProgramCode(),optional.getProgramCode()));
-			return gradSpecialProgramRule;			
-		}else {	
-			if(validateRequirementType(gradSpecialProgramRule.getRequirementType(),gradSpecialProgramRule.getRequirementType(),accessToken,CREATE)) {
-					return gradSpecialProgramRulesTransformer.transformToDTO(gradSpecialProgramRulesRepository.save(toBeSavedObject));
-			}else {
-				validation.addErrorAndStop(String.format(errorStringRequirementTypeInvalid,gradSpecialProgramRule.getRequirementType()));
-				return null;
-			}	
+			OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID());
+			validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
+			return optionalProgramRequirement;			
+		}else {
+			toBeSavedObject.setOptionalProgramRequirementCode(optionalProgramRequirementCodeRepository.getOne(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode()));
+			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(toBeSavedObject));	
 		}
 	}
 	
-	public GradSpecialProgramRule updateGradSpecialProgramRules(@Valid GradSpecialProgramRule gradSpecialProgramRule, String accessToken) {
-		GradSpecialProgramRulesEntity sourceObject = gradSpecialProgramRulesTransformer.transformToEntity(gradSpecialProgramRule);
-		Optional<GradSpecialProgramRulesEntity> gradSpecialProgramRulesOptional = gradSpecialProgramRulesRepository.findById(gradSpecialProgramRule.getId());
+	public OptionalProgramRequirement updateGradSpecialProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
+		OptionalProgramRequirementEntity sourceObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
+		Optional<OptionalProgramRequirementEntity> gradSpecialProgramRulesOptional = optionalProgramRequirementRepository.findById(optionalProgramRequirement.getOptionalProgramID());
 		if(gradSpecialProgramRulesOptional.isPresent()) {
-			GradSpecialProgramRulesEntity gradRuleEnity = gradSpecialProgramRulesOptional.get();	
-			if(checkIfSpecialRuleCodeChanged(gradRuleEnity,sourceObject)) {				
-				UUID existingObjectCheck = gradSpecialProgramRulesRepository.findIdByRuleCode(sourceObject.getRuleCode(), sourceObject.getSpecialProgramID());
+			OptionalProgramRequirementEntity gradRuleEnity = gradSpecialProgramRulesOptional.get();	
+			if(checkIfOptionalRuleCodeChanged(gradRuleEnity,sourceObject)) {				
+				UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(sourceObject.getOptionalProgramRequirementCode().getOptProReqCode(), sourceObject.getOptionalProgramID());
 				if(existingObjectCheck != null) {
-					GradSpecialProgramEntity optional = gradSpecialProgramRepository.getOne(gradSpecialProgramRule.getSpecialProgramID());
-					validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Special Program Code [%s] and Program Code [%s] combination.",gradSpecialProgramRule.getRuleCode(),optional.getSpecialProgramCode(),optional.getProgramCode()));
-					return gradSpecialProgramRule;			
+					OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID());
+					validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Special Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
+					return optionalProgramRequirement;			
 				}
 			}
-			if(validateRequirementType(gradSpecialProgramRule.getRequirementType(),gradRuleEnity.getRequirementType(),accessToken,UPDATE)) {
-				BeanUtils.copyProperties(sourceObject,gradRuleEnity,CREATED_BY,CREATED_TIMESTAMP);
-				return gradSpecialProgramRulesTransformer.transformToDTO(gradSpecialProgramRulesRepository.save(gradRuleEnity));
-			}else {
-				validation.addErrorAndStop(String.format(errorStringRequirementTypeInvalid,gradSpecialProgramRule.getRequirementType()));
-				return null;
-			}			
+			BeanUtils.copyProperties(sourceObject,gradRuleEnity,CREATE_USER,CREATE_DATE);
+			gradRuleEnity.setOptionalProgramRequirementCode(optionalProgramRequirementCodeRepository.getOne(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode()));
+			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(gradRuleEnity));			
 		}else {
 			validation.addErrorAndStop("Unique Identifier not found. Update Failed");
-			return gradSpecialProgramRule;
+			return optionalProgramRequirement;
 		}
 	}
 
 	public int deleteGradSpecialProgramRules(UUID programRuleID) {
-		Optional<GradSpecialProgramRulesEntity> gradSpecialProgramRuleOptional = gradSpecialProgramRulesRepository.findById(programRuleID);
+		Optional<OptionalProgramRequirementEntity> gradSpecialProgramRuleOptional = optionalProgramRequirementRepository.findById(programRuleID);
 		if(gradSpecialProgramRuleOptional.isPresent()) {
 			programRequirementRepository.deleteById(programRuleID);
 			return 1;
@@ -372,36 +374,26 @@ public class ProgramService {
 			return 0;			
 		}
 	}
-
-	public List<GradSpecialProgram> getAllSpecialProgramList() {
-		return gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.findAll());      
+	
+	public List<OptionalProgram> getAllSpecialProgramList() {
+		return optionalProgramTransformer.transformToDTO(optionalProgramRepository.findAll());      
 	}
-
-	public GradSpecialProgram getSpecialProgramByID(UUID specialProgramID) {
-		return gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.findById(specialProgramID));
+	
+	public OptionalProgram getSpecialProgramByID(UUID specialProgramID) {
+		return optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(specialProgramID));
 	}
-
-	public List<GradSpecialProgramRule> getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(String programCode,
-			String specialProgramCode,String requirementType,String accessToken) {
-		Optional<GradSpecialProgramEntity> existingObjectCheck = gradSpecialProgramRepository.findByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode);
+	
+	public List<OptionalProgramRequirement> getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(String programCode,
+			String specialProgramCode) {
+		Optional<OptionalProgramEntity> existingObjectCheck = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, specialProgramCode);
 		if(existingObjectCheck.isPresent()) {
-			return getAllSpecialProgramRuleList(existingObjectCheck.get().getId(),requirementType,accessToken);
+			return getAllSpecialProgramRuleList(existingObjectCheck.get().getOptionalProgramID());
 		}else {
 			validation.addErrorAndStop(String.format("Special Program Code [%s] and Program Code [%s] combination does not exist",specialProgramCode,programCode));
 			return new ArrayList<>();
 		}
 	}
-
-	public GradSpecialProgram getSpecialProgram(String programCode, String specialProgramCode) {
-		Optional<GradSpecialProgramEntity> optionalRec = gradSpecialProgramRepository.findByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode);
-		if(optionalRec.isPresent()) {
-			return gradSpecialProgramTransformer.transformToDTO(optionalRec.get());
-		}else {
-			validation.addErrorAndStop(String.format("Special Program Code [%s] and Program Code [%s] combination does not exist",specialProgramCode,programCode));
-			return null;
-		}
-	}
-	*/
+	
 	public List<ProgramRequirement> getAllProgramRulesList() {
 		List<ProgramRequirement> programRuleList  = programRequirementTransformer.transformToDTO(programRequirementRepository.findAll());   
     	if(!programRuleList.isEmpty()) {
@@ -414,22 +406,59 @@ public class ProgramService {
       	return programRequirementTransformer.transformToDTO(programRequirementRepository.findByGraduationProgramCode(programCode));
 	}
 	
-	/*
-	public List<GradSpecialProgramRule>  getAllSpecialProgramRulesList(String accessToken) {
-		List<GradSpecialProgramRule> programRuleList  = gradSpecialProgramRulesTransformer.transformToDTO(gradSpecialProgramRulesRepository.findAll());   
-    	programRuleList.forEach(pR-> {
-    		GradSpecialProgram gSp = gradSpecialProgramTransformer.transformToDTO(gradSpecialProgramRepository.findById(pR.getSpecialProgramID()));
-    		GradRequirementTypes reqType = webClient.get().uri(String.format(educGradProgramManagementApiConstants.getGradRequirementTypeByCode(),pR.getRequirementType())).headers(h -> h.setBearerAuth(accessToken)).retrieve().bodyToMono(GradRequirementTypes.class).block();
-    		pR.setRequirementTypeDesc(reqType.getDescription());
-    		pR.setProgramCode(gSp.getProgramCode());
-    		pR.setSpecialProgramCode(gSp.getSpecialProgramCode());
-    	});
-    	if(!programRuleList.isEmpty()) {
-	    	Collections.sort(programRuleList, Comparator.comparing(GradSpecialProgramRule::getProgramCode)
-	    			.thenComparing(GradSpecialProgramRule::getSpecialProgramCode)
-	    			.thenComparing(GradSpecialProgramRule::getRuleCode));   
-    	}
-        return programRuleList;
+	
+	public List<OptionalProgramRequirement>  getAllSpecialProgramRulesList() {
+        return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findAll());
 	}
-	*/
+
+
+	public OptionalProgram getSpecialProgram(String programCode, String specialProgramCode) {
+		Optional<OptionalProgramEntity> optionalRec = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, specialProgramCode);
+		if(optionalRec.isPresent()) {
+			return optionalProgramTransformer.transformToDTO(optionalRec.get());
+		}else {
+			validation.addErrorAndStop(String.format("Optional Program Code [%s] and Program Code [%s] combination does not exist",specialProgramCode,programCode));
+			return null;
+		}
+	}
+
+
+	public List<ProgramRequirementCode> getAllProgramRequirementCodeList() {
+		return programRequirementCodeTransformer.transformToDTO(programRequirementCodeRepository.findAll()); 
+	}
+	
+	public List<OptionalProgramRequirementCode> getAllOptionalProgramRequirementCodeList() {
+		return optionalProgramRequirementCodeTransformer.transformToDTO(optionalProgramRequirementCodeRepository.findAll()); 
+	}
+
+
+	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode) {
+		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
+		List<ProgramRequirement> programRules = getAllProgramRuleList(programCode);
+		data.setProgramRules(programRules);
+		if(StringUtils.isNotBlank(optionalProgramCode)) {
+			List<OptionalProgramRequirement> optionalProgramRules = getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, optionalProgramCode);
+			data.setOptionalProgramRules(optionalProgramRules);
+		}
+		return data;		
+	}
+	
+	@Transactional
+	public List<CareerProgram> getAllCareerProgramCodeList() {
+		List<CareerProgram> gradCareerProgramList = gradCareerProgramTransformer.transformToDTO(gradCareerProgramRepository.findAll());
+		Collections.sort(gradCareerProgramList, Comparator.comparing(CareerProgram::getCode));
+		return gradCareerProgramList;
+	}
+
+	@Transactional
+	public CareerProgram getSpecificCareerProgramCode(String cpc) {
+		Optional<CareerProgramEntity> entity = gradCareerProgramRepository
+				.findById(StringUtils.toRootUpperCase(cpc));
+		if (entity.isPresent()) {
+			return gradCareerProgramTransformer.transformToDTO(entity);
+		} else {
+			return null;
+		}
+	}
+	
 }

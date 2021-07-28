@@ -34,7 +34,7 @@ public class ProgramRequirementEntity  extends BaseEntity {
 	@Column(name = "GRADUATION_PROGRAM_CODE", nullable = false)
     private String graduationProgramCode; 
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "PROGRAM_REQUIREMENT_CODE", referencedColumnName = "PROGRAM_REQUIREMENT_CODE")
     private ProgramRequirementCodeEntity programRequirementCode;
 	

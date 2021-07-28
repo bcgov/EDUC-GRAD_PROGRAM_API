@@ -17,11 +17,11 @@ public interface OptionalProgramRepository extends JpaRepository<OptionalProgram
 
     List<OptionalProgramEntity> findAll();
 
-    @Query(value="select DISTINCT p.* from grad_special_program_rules c inner join grad_special_program p on p.id = c.FK_GRAD_SPECIAL_PROGRAM_ID where p.id=:specialProgramID",nativeQuery=true)
+    @Query(value="select DISTINCT p.* from optional_program_requirement c inner join optional_program p on p.optionalProgramID = c.optionalProgramID where p.optionalProgramID=:specialProgramID",nativeQuery=true)
 	Optional<OptionalProgramEntity> findIfChildRecordsExists(@Valid UUID specialProgramID);
 
 	Optional<OptionalProgramEntity> findByGraduationProgramCodeAndOptProgramCode(String programCode, String specialProgramCode);
 
-	List<OptionalProgramEntity> findByProgramCode(String programCode);
+	List<OptionalProgramEntity> findByGraduationProgramCode(String programCode);
 
 }
