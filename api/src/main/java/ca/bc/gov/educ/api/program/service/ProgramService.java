@@ -32,11 +32,13 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
+import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
 import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
+import ca.bc.gov.educ.api.program.model.entity.RequirementTypeCodeEntity;
 import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
@@ -44,6 +46,7 @@ import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementTr
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
+import ca.bc.gov.educ.api.program.model.transformer.RequirementTypeCodeTransformer;
 import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
@@ -51,6 +54,7 @@ import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepos
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
+import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
 @Service
@@ -98,6 +102,12 @@ public class ProgramService {
 
 	@Autowired
 	private CareerProgramTransformer gradCareerProgramTransformer;
+	
+	@Autowired
+	private RequirementTypeCodeRepository requirementTypeCodeRepository;
+
+	@Autowired
+	private RequirementTypeCodeTransformer requirementTypeCodeTransformer;
     
     @Autowired
 	GradValidation validation;
@@ -458,6 +468,59 @@ public class ProgramService {
 			return gradCareerProgramTransformer.transformToDTO(entity);
 		} else {
 			return null;
+		}
+	}
+	
+	
+	@Transactional
+	public List<RequirementTypeCode> getAllRequirementTypeCodeList() {
+		return requirementTypeCodeTransformer.transformToDTO(requirementTypeCodeRepository.findAll());
+	}
+
+	@Transactional
+	public RequirementTypeCode getSpecificRequirementTypeCode(String typeCode) {
+		Optional<RequirementTypeCodeEntity> entity = requirementTypeCodeRepository
+				.findById(StringUtils.toRootUpperCase(typeCode));
+		if (entity.isPresent()) {
+			return requirementTypeCodeTransformer.transformToDTO(entity.get());
+		} else {
+			return null;
+		}
+	}
+	
+	public RequirementTypeCode createRequirementTypeCode(@Valid RequirementTypeCode gradRequirementTypes) {
+		RequirementTypeCodeEntity toBeSavedObject = requirementTypeCodeTransformer.transformToEntity(gradRequirementTypes);
+		Optional<RequirementTypeCodeEntity> existingObjectCheck = requirementTypeCodeRepository.findById(gradRequirementTypes.getReqTypeCode());
+		if(existingObjectCheck.isPresent()) {
+			validation.addErrorAndStop(String.format("Requirement Type [%s] already exists",gradRequirementTypes.getReqTypeCode()));
+			return gradRequirementTypes;			
+		}else {
+			return requirementTypeCodeTransformer.transformToDTO(requirementTypeCodeRepository.save(toBeSavedObject));
+		}
+	}
+
+	public RequirementTypeCode updateRequirementTypeCode(@Valid RequirementTypeCode gradRequirementTypes) {
+		Optional<RequirementTypeCodeEntity> gradRequirementTypesOptional = requirementTypeCodeRepository.findById(gradRequirementTypes.getReqTypeCode());
+		RequirementTypeCodeEntity sourceObject = requirementTypeCodeTransformer.transformToEntity(gradRequirementTypes);
+		if(gradRequirementTypesOptional.isPresent()) {
+			RequirementTypeCodeEntity gradEnity = gradRequirementTypesOptional.get();			
+			BeanUtils.copyProperties(sourceObject,gradEnity,CREATE_USER,CREATE_DATE);
+    		return requirementTypeCodeTransformer.transformToDTO(requirementTypeCodeRepository.save(gradEnity));
+		}else {
+			validation.addErrorAndStop(String.format("Requirement Type [%s] does not exists",gradRequirementTypes.getReqTypeCode()));
+			return gradRequirementTypes;
+		}
+	}
+
+	public int deleteRequirementTypeCode(@Valid String programType) {
+		Boolean isPresent = getRequirementByRequirementType(programType);
+		if(isPresent) {
+			validation.addErrorAndStop(
+					String.format("This Requirement Type [%s] cannot be deleted as some rules are of this type.",programType));
+			return 0;
+		}else {
+			requirementTypeCodeRepository.deleteById(programType);
+			return 1;
 		}
 	}
 	

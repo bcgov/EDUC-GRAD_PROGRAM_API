@@ -33,6 +33,7 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
+import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
 import ca.bc.gov.educ.api.program.service.ProgramService;
 import ca.bc.gov.educ.api.program.util.ApiResponseModel;
 import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
@@ -71,6 +72,7 @@ public class ProgramController {
     private static final String PROGRAM_NAME="Program Name";
     private static final String OPTIONAL_PROGRAM_ID="Optional Program ID";
     private static final String RULE_CODE = "Rule Code";
+    private static final String REQUIREMENT_TYPE_CODE="Requirement Type Code";
 
     @GetMapping(value=EducGradProgramApiConstants.GET_ALL_PROGRAM_MAPPING, produces= {"application/json"})
     @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM)
@@ -423,5 +425,77 @@ public class ProgramController {
         }
     }
     
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_REQUIREMENT_TYPE_CODE)
+    @Operation(summary = "Find all Requirement Types", description = "Get all Requirement Types", tags = {"Requirement Type"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<List<RequirementTypeCode>> getAllRequirementTypeCodeList() {
+        logger.debug("getAllRequirementTypeCodeList : ");
+        return response.GET(programService.getAllRequirementTypeCodeList());
+    }
+
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_BY_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_GRAD_REQUIREMENT_TYPE_CODE)
+    @Operation(summary = "Find a Requirement Type", description = "Get a Requirement Type", tags = {"Requirement Type"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "204", description = "NO CONTENT")})
+    public ResponseEntity<RequirementTypeCode> getSpecificRequirementTypeCode(@PathVariable String typeCode) {
+        logger.debug("getSpecificRequirementTypeCode : ");
+        RequirementTypeCode gradResponse = programService.getSpecificRequirementTypeCode(typeCode);
+        if (gradResponse != null) {
+            return response.GET(gradResponse);
+        } else {
+            return response.NO_CONTENT();
+        }
+    }
+
+    @PostMapping(EducGradProgramApiConstants.GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.CREATE_REQUIREMENT_TYPE)
+    @Operation(summary = "Create a Requirement Type", description = "Create a Requirement Type", tags = {"Requirement Type"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    public ResponseEntity<ApiResponseModel<RequirementTypeCode>> createRequirementTypeCode(
+            @Valid @RequestBody RequirementTypeCode requirementTypeCode) {
+        logger.debug("creatRequirementTypeCodes : ");
+        validation.requiredField(requirementTypeCode.getReqTypeCode(), REQUIREMENT_TYPE_CODE);
+        validation.requiredField(requirementTypeCode.getDescription(), "Requirement Type Description");
+        if (validation.hasErrors()) {
+            validation.stopOnErrors();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response.CREATED(programService.createRequirementTypeCode(requirementTypeCode));
+    }
+
+    @PutMapping(EducGradProgramApiConstants.GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.UPDATE_REQUIREMENT_TYPE)
+    @Operation(summary = "Update a Requirement Type", description = "Update a Requirement Type", tags = {"Requirement Type"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    public ResponseEntity<ApiResponseModel<RequirementTypeCode>> updateRequirementTypeCode(
+            @Valid @RequestBody RequirementTypeCode requirementTypeCode) {
+        logger.info("updateRequirementTypeCode : ");
+        validation.requiredField(requirementTypeCode.getReqTypeCode(), REQUIREMENT_TYPE_CODE);
+        validation.requiredField(requirementTypeCode.getDescription(), "Requirement Type Description");
+        if (validation.hasErrors()) {
+            validation.stopOnErrors();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response.UPDATED(programService.updateRequirementTypeCode(requirementTypeCode));
+    }
+
+    @DeleteMapping(EducGradProgramApiConstants.GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_BY_CODE_MAPPING)
+    @PreAuthorize(PermissionsContants.DELETE_REQUIREMENT_TYPE)
+    @Operation(summary = "Delete a Requirement Type", description = "Delete a Requirement Type", tags = {"Requirement Type"})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    public ResponseEntity<Void> deleteRequirementTypeCode(@Valid @PathVariable String typeCode) {
+        logger.debug("deleteRequirementTypeCode : ");
+        validation.requiredField(typeCode, REQUIREMENT_TYPE_CODE);
+        if (validation.hasErrors()) {
+            validation.stopOnErrors();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response.DELETE(programService.deleteRequirementTypeCode(typeCode));
+    }
     
 }
