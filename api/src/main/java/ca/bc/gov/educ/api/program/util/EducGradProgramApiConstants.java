@@ -29,6 +29,8 @@ public class EducGradProgramApiConstants {
     public static final String GET_ALL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/programrequirementcode";
     public static final String GET_ALL_OPTIONAL_PROGRAM_REQUIREMENT_CODES_MAPPING = "/optionapProgramrequirementcode";
 
+    public static final String GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_MAPPING = "/gradrequirementtype";
+    public static final String GET_ALL_GRAD_REQUIREMENT_TYPE_CODE_BY_CODE_MAPPING = "/gradrequirementtype/{typeCode}";
     //Attribute Constants
     public static final String GET_ALL_PROGRAM_RULES = "/programrules";
     public static final String GET_PROGRAM_RULES = "/allprogramrules";

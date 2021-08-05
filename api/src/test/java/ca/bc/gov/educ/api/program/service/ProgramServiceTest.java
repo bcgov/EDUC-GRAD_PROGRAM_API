@@ -3,6 +3,7 @@ package ca.bc.gov.educ.api.program.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
 import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
 import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
+import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
 import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
 import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
@@ -33,6 +35,7 @@ import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementCodeEnt
 import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementCodeEntity;
 import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
+import ca.bc.gov.educ.api.program.model.entity.RequirementTypeCodeEntity;
 import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
 import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
@@ -40,6 +43,7 @@ import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepos
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
+import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
 import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
@@ -72,6 +76,9 @@ public class ProgramServiceTest {
 
 	@MockBean
 	private CareerProgramRepository gradCareerProgramRepository;
+	
+	@MockBean
+	private RequirementTypeCodeRepository requirementTypeCodeRepository;
 	
 	@Autowired
 	GradValidation validation;
@@ -657,6 +664,144 @@ public class ProgramServiceTest {
 		assertNotNull(data);
 		assertEquals(2, data.getOptionalProgramRules().size());
     	
+	}
+	
+	@Test
+	public void testCreateRequirementTypeCode() {
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by School");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		obj.toString();
+		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
+		objEntity.setReqTypeCode("DC");
+		objEntity.setDescription("Data Correction by School");
+		objEntity.setCreateUser("GRADUATION");
+		objEntity.setUpdateUser("GRADUATION");
+		objEntity.setCreateDate(new Date(System.currentTimeMillis()));
+		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
+		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(Optional.empty());
+		Mockito.when(requirementTypeCodeRepository.save(objEntity)).thenReturn(objEntity);
+		programService.createRequirementTypeCode(obj);
+		
+	}
+	
+	@Test(expected = GradBusinessRuleException.class)
+	public void testCreateRequirementTypeCode_codeAlreadyExists() {
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by School");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
+		objEntity.setReqTypeCode("DC");
+		objEntity.setDescription("Data Correction by School");
+		objEntity.setCreateUser("GRADUATION");
+		objEntity.setUpdateUser("GRADUATION");
+		objEntity.setCreateDate(new Date(System.currentTimeMillis()));
+		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
+		Optional<RequirementTypeCodeEntity> ent = Optional.of(objEntity);
+		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(ent);
+		programService.createRequirementTypeCode(obj);
+		
+	}
+	
+	@Test
+	public void testUpdateRequirementTypeCode() {
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by Schools");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
+		objEntity.setReqTypeCode("DC");
+		objEntity.setDescription("Data Correction by School");
+		objEntity.setCreateUser("GRADUATION");
+		objEntity.setUpdateUser("GRADUATION");
+		objEntity.setCreateDate(new Date(System.currentTimeMillis()));
+		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
+		Optional<RequirementTypeCodeEntity> ent = Optional.of(objEntity);
+		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(ent);
+		Mockito.when(requirementTypeCodeRepository.save(objEntity)).thenReturn(objEntity);
+		programService.updateRequirementTypeCode(obj);
+		
+	}
+	
+	@Test(expected = GradBusinessRuleException.class)
+	public void testUpdateRequirementTypeCode_codeAlreadyExists() {
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by Schools");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
+		objEntity.setReqTypeCode("DC");
+		objEntity.setDescription("Data Correction by School");
+		objEntity.setCreateUser("GRADUATION");
+		objEntity.setUpdateUser("GRADUATION");
+		objEntity.setCreateDate(new Date(System.currentTimeMillis()));
+		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
+		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(Optional.empty());
+		programService.updateRequirementTypeCode(obj);
+		
+	}
+	
+	@Test
+	public void testGetAllRequirementTypesCodeList() {
+		List<RequirementTypeCodeEntity> requirementTypeCodeList = new ArrayList<>();
+		RequirementTypeCodeEntity obj = new RequirementTypeCodeEntity();
+		obj.setReqTypeCode("M");
+		obj.setDescription("MATCH");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		requirementTypeCodeList.add(obj);
+		obj = new RequirementTypeCodeEntity();
+		obj.setReqTypeCode("MC");
+		obj.setDescription("MINCREDITS");
+		requirementTypeCodeList.add(obj);
+		Mockito.when(requirementTypeCodeRepository.findAll()).thenReturn(requirementTypeCodeList);
+		programService.getAllRequirementTypeCodeList();
+	}
+	
+	@Test
+	public void testGetSpecificRequirementTypesCode() {
+		String reqType = "M";
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("M");
+		obj.setDescription("MATCH");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		obj.toString();
+		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
+		objEntity.setReqTypeCode("M");
+		objEntity.setDescription("MATCH");
+		objEntity.setCreateUser("GRADUATION");
+		objEntity.setUpdateUser("GRADUATION");
+		objEntity.setCreateDate(new Date(System.currentTimeMillis()));
+		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
+		Optional<RequirementTypeCodeEntity> ent = Optional.of(objEntity);
+		Mockito.when(requirementTypeCodeRepository.findById(reqType)).thenReturn(ent);
+		programService.getSpecificRequirementTypeCode(reqType);
+	}
+	
+	@Test
+	public void testGetSpecificRequirementTypesCodeReturnsNull() {
+		String reqType = "E";
+		Mockito.when(requirementTypeCodeRepository.findById(reqType)).thenReturn(Optional.empty());
+		programService.getSpecificRequirementTypeCode(reqType);
 	}
 	
 }

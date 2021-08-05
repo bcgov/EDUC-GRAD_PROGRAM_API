@@ -2,6 +2,7 @@ package ca.bc.gov.educ.api.program.controller;
 
 import static org.junit.Assert.assertNull;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,7 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
+import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
 import ca.bc.gov.educ.api.program.service.ProgramService;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 import ca.bc.gov.educ.api.program.util.MessageHelper;
@@ -554,4 +556,50 @@ public class ProgramControllerTest {
 		Mockito.verify(programService).getSpecificCareerProgramCode(requirementType);
 	}
 	
+	@Test
+	public void testGetAllRequirementTypesCodeList() {
+		List<RequirementTypeCode> gradRequirementTypesList = new ArrayList<>();
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by School");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		gradRequirementTypesList.add(obj);
+		obj = new RequirementTypeCode();
+		obj.setReqTypeCode("CC");
+		obj.setDescription("Courses not complete");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		gradRequirementTypesList.add(obj);
+		Mockito.when(programService.getAllRequirementTypeCodeList()).thenReturn(gradRequirementTypesList);
+		programController.getAllRequirementTypeCodeList();
+		Mockito.verify(programService).getAllRequirementTypeCodeList();
+	}
+	
+	@Test
+	public void testGetSpecificRequirementTypesCode() {
+		String requirementType = "DC";
+		RequirementTypeCode obj = new RequirementTypeCode();
+		obj.setReqTypeCode("DC");
+		obj.setDescription("Data Correction by School");
+		obj.setCreateUser("GRADUATION");
+		obj.setUpdateUser("GRADUATION");
+		obj.setCreateDate(new Date(System.currentTimeMillis()));
+		obj.setUpdateDate(new Date(System.currentTimeMillis()));
+		Mockito.when(programService.getSpecificRequirementTypeCode(requirementType)).thenReturn(obj);
+		programController.getSpecificRequirementTypeCode(requirementType);
+		Mockito.verify(programService).getSpecificRequirementTypeCode(requirementType);
+	}
+	
+	@Test
+	public void testGetSpecificRequirementTypesCode_noContent() {
+		String requirementType = "AB";	
+		Mockito.when(programService.getSpecificRequirementTypeCode(requirementType)).thenReturn(null);
+		programController.getSpecificRequirementTypeCode(requirementType);
+		Mockito.verify(programService).getSpecificRequirementTypeCode(requirementType);
+	}
 }
