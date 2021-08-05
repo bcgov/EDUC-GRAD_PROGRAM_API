@@ -1,8 +1,6 @@
 package ca.bc.gov.educ.api.program.service;
 
-import static org.hamcrest.CoreMatchers.any;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.util.ArrayList;
@@ -39,21 +37,18 @@ import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepos
 import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
 import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
+import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
 import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class WebClientTest {
 
     @MockBean
     WebClient webClient;
-
-    @Autowired
-    private EducGradProgramApiConstants constants;
 
     @Autowired
 	private ProgramService programService;
@@ -86,6 +81,9 @@ public class WebClientTest {
     
     @MockBean
     private OptionalProgramRepository optionalProgramRepository;
+    
+    @MockBean
+    private RequirementTypeCodeRepository requirementTypeCodeRepository;
 	
     @Autowired
 	GradValidation validation;
@@ -95,6 +93,7 @@ public class WebClientTest {
         openMocks(this);
         programRequirementCodeRepository.save(createProgramRequirementCode());
         optionalProgramRequirementCodeRepository.save(createOptionalProgramRequirementCode());
+        requirementTypeCodeRepository.save(createRequirementTypeCode());
     }
     
 	@After
@@ -150,8 +149,7 @@ public class WebClientTest {
 		ruleEntity.setGraduationProgramCode("2018-EN");
 		ProgramRequirementCodeEntity codeE = new ProgramRequirementCodeEntity();
 		codeE.setProReqCode("100");
-		ruleEntity.setProgramRequirementCode(codeE);
-		String requirementType = "M";        
+		ruleEntity.setProgramRequirementCode(codeE);     
         Mockito.when(programRequirementRepository.findById(gradProgramRule.getProgramRequirementID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(null);
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
@@ -171,8 +169,7 @@ public class WebClientTest {
 		ruleEntity.setGraduationProgramCode("2018-EN");
 		ProgramRequirementCodeEntity codeE = new ProgramRequirementCodeEntity();
 		codeE.setProReqCode("800");
-		ruleEntity.setProgramRequirementCode(codeE);
-		String requirementType = "M";        
+		ruleEntity.setProgramRequirementCode(codeE);      
         Mockito.when(programRequirementRepository.findById(gradProgramRule.getProgramRequirementID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(new UUID(1, 1));
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
@@ -359,9 +356,7 @@ public class WebClientTest {
     
     
     @Test
-    public void testGetAllSpecialProgramRulesList() {
-    	String requirementType="M";
-    	
+    public void testGetAllSpecialProgramRulesList() {    	
     	RequirementTypeCodeEntity reqType = new RequirementTypeCodeEntity();
     	reqType.setReqTypeCode("M");
     	reqType.setDescription("Match");
@@ -435,5 +430,41 @@ public class WebClientTest {
 		obj.setRequirementCategory("C");
 		return obj;
 	}
+    
+    private RequirementTypeCodeEntity createRequirementTypeCode() {
+    	RequirementTypeCodeEntity obj = new RequirementTypeCodeEntity();
+		obj.setReqTypeCode("M");
+		obj.setLabel("SASD");
+		return obj;
+	}
+    
+    @Test
+    public void testdeleteRequirementType_with_APICallReturnsFalse() {
+    	String requirementType = "M";
+    	Mockito.when(programRequirementRepository.existsByRequirementTypeCode(requirementType)).thenReturn(new ArrayList<ProgramRequirementEntity>());
+        int success = programService.deleteRequirementTypeCode(requirementType);
+        assertEquals(1,success);
+        
+    }
+    
+    @Test(expected = GradBusinessRuleException.class)
+    public void testdeleteRequirementType_with_APICallReturnsTrue() {
+    	String requirementType = "M";
+    	List<ProgramRequirementEntity> list = new ArrayList<ProgramRequirementEntity>();
+    	ProgramRequirementEntity code = new ProgramRequirementEntity();
+    	code.setGraduationProgramCode("2018-EN");
+    	ProgramRequirementCodeEntity prcode = new ProgramRequirementCodeEntity();
+    	prcode.setProReqCode("100");
+    	prcode.setLabel("asdasd");
+    	RequirementTypeCodeEntity typeCode = new RequirementTypeCodeEntity();
+    	typeCode.setReqTypeCode("M");
+    	prcode.setRequirementTypeCode(typeCode);
+    	code.setProgramRequirementCode(prcode);
+    	list.add(code);
+    	Mockito.when(programRequirementRepository.existsByRequirementTypeCode(requirementType)).thenReturn(list);
+        int success = programService.deleteRequirementTypeCode(requirementType);
+        assertEquals(0,success);
+        
+    }
 }
 
