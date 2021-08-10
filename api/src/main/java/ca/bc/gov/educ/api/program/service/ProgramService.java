@@ -164,7 +164,7 @@ public class ProgramService {
 				GradRuleDetails details = new GradRuleDetails();
 				details.setRuleCode(gpR.getOptionalProgramRequirementCode().getOptProReqCode());
 				details.setRequirementName(gpR.getOptionalProgramRequirementCode().getLabel());	
-				OptionalProgram gradSpecialProgram = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(gpR.getOptionalProgramID()));
+				OptionalProgram gradSpecialProgram = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(gpR.getOptionalProgramID().getOptionalProgramID()));
 				details.setProgramCode(gradSpecialProgram.getGraduationProgramCode());
 				details.setSpecialProgramCode(gradSpecialProgram.getOptProgramCode());
 				detailList.add(details);
@@ -341,9 +341,9 @@ public class ProgramService {
 	
 	public OptionalProgramRequirement createGradSpecialProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
 		OptionalProgramRequirementEntity toBeSavedObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
-		UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optionalProgramRequirement.getOptionalProgramID());
+		UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
 		if(existingObjectCheck != null) {
-			OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID());
+			OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
 			validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
 			return optionalProgramRequirement;			
 		}else {
@@ -354,13 +354,13 @@ public class ProgramService {
 	
 	public OptionalProgramRequirement updateGradSpecialProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
 		OptionalProgramRequirementEntity sourceObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
-		Optional<OptionalProgramRequirementEntity> gradSpecialProgramRulesOptional = optionalProgramRequirementRepository.findById(optionalProgramRequirement.getOptionalProgramID());
+		Optional<OptionalProgramRequirementEntity> gradSpecialProgramRulesOptional = optionalProgramRequirementRepository.findById(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
 		if(gradSpecialProgramRulesOptional.isPresent()) {
 			OptionalProgramRequirementEntity gradRuleEnity = gradSpecialProgramRulesOptional.get();	
 			if(checkIfOptionalRuleCodeChanged(gradRuleEnity,sourceObject)) {				
-				UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(sourceObject.getOptionalProgramRequirementCode().getOptProReqCode(), sourceObject.getOptionalProgramID());
+				UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(sourceObject.getOptionalProgramRequirementCode().getOptProReqCode(), sourceObject.getOptionalProgramID().getOptionalProgramID());
 				if(existingObjectCheck != null) {
-					OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID());
+					OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
 					validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Special Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
 					return optionalProgramRequirement;			
 				}

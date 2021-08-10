@@ -13,6 +13,6 @@ import lombok.EqualsAndHashCode;
 public class OptionalProgramRequirement extends BaseModel {
 
 	private UUID optionalProgramRequirementID; 
-	private UUID optionalProgramID; 
+	private OptionalProgram optionalProgramID; 
 	private OptionalProgramRequirementCode optionalProgramRequirementCode;
 }
