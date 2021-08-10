@@ -144,13 +144,17 @@ public class ProgramServiceTest {
 		
 		List<OptionalProgramRequirementEntity> gradSpecialProgramRule = new ArrayList<OptionalProgramRequirementEntity>();
 		OptionalProgramRequirementEntity specialRuleObj = new OptionalProgramRequirementEntity();
-		specialRuleObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity opE = new OptionalProgramEntity();
+		opE.setOptionalProgramID(new UUID(1, 1));
+		specialRuleObj.setOptionalProgramID(opE);
 		OptionalProgramRequirementCodeEntity code3 = new OptionalProgramRequirementCodeEntity();
 		code3.setOptProReqCode("100");
 		specialRuleObj.setOptionalProgramRequirementCode(code3);
 		gradSpecialProgramRule.add(specialRuleObj);
 		specialRuleObj = new OptionalProgramRequirementEntity();
-		specialRuleObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity opE2 = new OptionalProgramEntity();
+		opE2.setOptionalProgramID(new UUID(1, 1));;
+		specialRuleObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity code4 = new OptionalProgramRequirementCodeEntity();
 		code4.setOptProReqCode("100");
 		specialRuleObj.setOptionalProgramRequirementCode(code4);
@@ -428,13 +432,17 @@ public class ProgramServiceTest {
 		
 		List<OptionalProgramRequirementEntity> gradProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
 		OptionalProgramRequirementEntity ruleObj = new OptionalProgramRequirementEntity();
-		ruleObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity opE = new OptionalProgramEntity();
+		opE.setOptionalProgramID(new UUID(1, 1));
+		ruleObj.setOptionalProgramID(opE);
 		OptionalProgramRequirementCodeEntity code = new OptionalProgramRequirementCodeEntity();
 		code.setOptProReqCode("100");
 		ruleObj.setOptionalProgramRequirementCode(code);
 		gradProgramRuleList.add(ruleObj);
 		ruleObj = new OptionalProgramRequirementEntity();
-		ruleObj.setOptionalProgramID(new UUID(2, 2));
+		OptionalProgramEntity opE2 = new OptionalProgramEntity();
+		opE2.setOptionalProgramID(new UUID(2, 2));
+		ruleObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity code2 = new OptionalProgramRequirementCodeEntity();
 		code2.setOptProReqCode("100");
 		ruleObj.setOptionalProgramRequirementCode(code2);
@@ -538,7 +546,9 @@ public class ProgramServiceTest {
 		OptionalProgramRequirementCodeEntity code = new OptionalProgramRequirementCodeEntity();
 		code.setOptProReqCode("100");
 		gradSpecialProgramRulesEntity.setOptionalProgramRequirementCode(code);
-		gradSpecialProgramRulesEntity.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity opE = new OptionalProgramEntity();
+		opE.setOptionalProgramID(new UUID(1, 1));
+		gradSpecialProgramRulesEntity.setOptionalProgramID(opE);
 		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.of(gradSpecialProgramRulesEntity));
 		programService.deleteGradSpecialProgramRules(ruleID);
 	}
@@ -645,13 +655,17 @@ public class ProgramServiceTest {
 		
 		List<OptionalProgramRequirementEntity> gradOptionalProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
 		OptionalProgramRequirementEntity ruleOptionalObj = new OptionalProgramRequirementEntity();
-		ruleOptionalObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity opE = new OptionalProgramEntity();
+		opE.setOptionalProgramID(new UUID(1, 1));
+		ruleOptionalObj.setOptionalProgramID(opE);
 		OptionalProgramRequirementCodeEntity codeOp2 = new OptionalProgramRequirementCodeEntity();
 		codeOp2.setOptProReqCode("100");
 		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp2);
 		gradOptionalProgramRuleList.add(ruleOptionalObj);
 		ruleOptionalObj = new OptionalProgramRequirementEntity();
-		ruleOptionalObj.setOptionalProgramID(new UUID(2, 2));
+		OptionalProgramEntity opE2 = new OptionalProgramEntity();
+		opE2.setOptionalProgramID(new UUID(2, 2));
+		ruleOptionalObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity codeOp3 = new OptionalProgramRequirementCodeEntity();
 		codeOp3.setOptProReqCode("100");
 		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp3);

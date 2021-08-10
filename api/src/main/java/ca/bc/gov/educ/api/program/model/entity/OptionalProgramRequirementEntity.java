@@ -31,8 +31,9 @@ public class OptionalProgramRequirementEntity  extends BaseEntity {
 	@Column(name = "OPTIONAL_PROGRAM_RQMT_ID", nullable = false)
     private UUID optionalProgramRequirementID; 
 	
-	@Column(name = "OPTIONAL_PROGRAM_ID", nullable = false)
-    private UUID optionalProgramID; 
+	@OneToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "OPTIONAL_PROGRAM_ID", referencedColumnName = "OPTIONAL_PROGRAM_ID")
+    private OptionalProgramEntity optionalProgramID; 
 	
 	@OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "OPTIONAL_PROGRAM_RQMT_CODE", referencedColumnName = "OPTIONAL_PROGRAM_RQMT_CODE")

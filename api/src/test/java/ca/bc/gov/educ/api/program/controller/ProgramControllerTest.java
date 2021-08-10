@@ -424,7 +424,9 @@ public class ProgramControllerTest {
 		
 		List<OptionalProgramRequirement> list = new ArrayList<>();
 		OptionalProgramRequirement gradProgramRule = new OptionalProgramRequirement();
-    	gradProgramRule.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgram op = new OptionalProgram();
+		op.setOptionalProgramID(new UUID(1, 1));
+    	gradProgramRule.setOptionalProgramID(op);
     	OptionalProgramRequirementCode code = new OptionalProgramRequirementCode();
 		code.setOptProReqCode("100");
 		gradProgramRule.setOptionalProgramRequirementCode(code);
@@ -509,7 +511,9 @@ public class ProgramControllerTest {
 		
 		List<OptionalProgramRequirement> listOptional = new ArrayList<OptionalProgramRequirement>();
 		OptionalProgramRequirement objs = new OptionalProgramRequirement();
-		objs.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgram op = new OptionalProgram();
+		op.setOptionalProgramID(new UUID(1, 1));
+		objs.setOptionalProgramID(op);
 		OptionalProgramRequirementCode codes = new OptionalProgramRequirementCode();
 		codes.setOptProReqCode("100");
 		objs.setOptionalProgramRequirementCode(codes);
