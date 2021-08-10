@@ -12,7 +12,7 @@ import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 @Repository
 public interface OptionalProgramRequirementRepository extends JpaRepository<OptionalProgramRequirementEntity, UUID> {
 
-    @Query("select c from OptionalProgramRequirementEntity c where c.optionalProgramID=:specialProgramID")
+    @Query("select c from OptionalProgramRequirementEntity c where c.optionalProgramID.optionalProgramID=:specialProgramID")
 	List<OptionalProgramRequirementEntity> findByOptionalProgramID(UUID specialProgramID);
 
     @Query("select p.id from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.optProReqCode=:ruleCode and p.optionalProgramID=:specialProgramID")
