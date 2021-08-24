@@ -444,6 +444,8 @@ public class ProgramService {
 
 	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode) {
 		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
+		GraduationProgramCode code = getSpecificProgram(programCode);
+		data.setGradProgram(code);
 		List<ProgramRequirement> programRules = getAllProgramRuleList(programCode);
 		data.setProgramRules(programRules);
 		if(StringUtils.isNotBlank(optionalProgramCode)) {
