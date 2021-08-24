@@ -632,6 +632,9 @@ public class ProgramServiceTest {
 		String optionalProgramCode="FI";
 		String programCode="2018-EN";
 		
+		GraduationProgramCodeEntity codeG = new GraduationProgramCodeEntity();
+		codeG.setProgramCode("2018-EN");
+		codeG.setProgramName("SRQQW");
 		List<ProgramRequirementEntity> gradProgramRuleList = new ArrayList<ProgramRequirementEntity>();
 		ProgramRequirementEntity ruleObj = new ProgramRequirementEntity();
 		ruleObj.setGraduationProgramCode("2018-EN");
@@ -670,7 +673,7 @@ public class ProgramServiceTest {
 		codeOp3.setOptProReqCode("100");
 		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp3);
 		gradOptionalProgramRuleList.add(ruleOptionalObj);
-		
+		Mockito.when(graduationProgramCodeRepository.findById(programCode)).thenReturn(Optional.of(codeG));
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradSpecialProgramEntity));
 		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradSpecialProgramEntity.getOptionalProgramID())).thenReturn(gradOptionalProgramRuleList);
 		
