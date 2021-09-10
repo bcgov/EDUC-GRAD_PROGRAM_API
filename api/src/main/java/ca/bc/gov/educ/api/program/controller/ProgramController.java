@@ -264,7 +264,7 @@ public class ProgramController {
     
     @DeleteMapping(EducGradProgramApiConstants.DELETE_OPTIONAL_PROGRAM_MAPPING)
     @PreAuthorize(PermissionsContants.DELETE_GRAD_OPTIONAL_PROGRAM)
-    @Operation(summary = "Delete Optional Program", description = "Delete Optional Program", tags = { "Optioanal Programs" })
+    @Operation(summary = "Delete Optional Program", description = "Delete Optional Program", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
     public ResponseEntity<Void> deleteGradSpecialPrograms(@PathVariable(value = "optionalProgramID", required = true) String optionalProgramID) { 
     	logger.debug("deleteGradPrograms : ");
@@ -368,7 +368,7 @@ public class ProgramController {
     
     @GetMapping(value=EducGradProgramApiConstants.GET_ALL_PROGRAM_REQUIREMENT_CODES_MAPPING, produces= {"application/json"})
     @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
-    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Programs Rules" })
+    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Program Requirement Codes" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",content = @Content(array = @ArraySchema(schema = @Schema(implementation = GraduationProgramCode.class)))), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
     public ResponseEntity<List<ProgramRequirementCode>> getAllProgramRequirementCode() { 
     	logger.debug("getAllProgramRequirementCode : ");
@@ -381,7 +381,7 @@ public class ProgramController {
     
     @GetMapping(value=EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_REQUIREMENT_CODES_MAPPING, produces= {"application/json"})
     @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM_RULES)
-    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Programs Rules" })
+    @Operation(summary = "Find All Program Requirement Code", description = "Get All Program Requirement Code", tags = { "Program Requirement Codes" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK",content = @Content(array = @ArraySchema(schema = @Schema(implementation = GraduationProgramCode.class)))), @ApiResponse(responseCode = "204", description = "NO CONTENT.")})
     public ResponseEntity<List<OptionalProgramRequirementCode>> getAllOptionalProgramRequirementCode() { 
     	logger.debug("getAllOptionalProgramRequirementCode : ");
