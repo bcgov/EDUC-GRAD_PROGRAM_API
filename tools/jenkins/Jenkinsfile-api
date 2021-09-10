@@ -33,8 +33,8 @@ pipeline{
                         def bcTemplate = openshift.process("-f",
                             "${SOURCE_REPO_URL_RAW}/${BRANCH}/tools/openshift/api.bc.yaml",
                             "REPO_NAME=${REPO_NAME}")
-                        def bc = openshift.apply(bcTemplate)
-                        bc = openshift.selector("bc", "${REPO_NAME}-bc").startBuild()
+                        openshift.apply(bcTemplate)
+                        def bc = openshift.selector("bc", "${REPO_NAME}-bc").startBuild()
                         sleep 20
                         bc.logs('-f')
                     }
@@ -56,10 +56,11 @@ pipeline{
                         openshift.withProject(TOOLS_NAMESPACE) {
                             def dcTemplate = openshift.process('-f',
                                 '${SOURCE_REPO_URL_RAW}/${BRANCH}/tools/openshift/api.dc.yaml',
-                                "REPO_NAME=${REPO_NAME}", "NAMESPACE=${TOOLS_NAMESPACE}", "HOST_ROUTE=${DEV_HOST_ROUTE}")
+                                "REPO_NAME=${REPO_NAME}", "HOST_ROUTE=${DEV_HOST_ROUTE}")
 
                             echo "Applying Deployment ${REPO_NAME}"
-                            def dc = openshift.apply(dcTemplate).narrow('dc')
+                            openshift.apply(dcTemplate)
+                            def dc = openshift.selector("dc", "${REPO_NAME}-dc")
 
                             echo "Waiting for deployment to roll out"
                             // Wait for deployments to roll out
