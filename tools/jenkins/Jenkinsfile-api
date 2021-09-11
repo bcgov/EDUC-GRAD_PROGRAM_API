@@ -54,8 +54,8 @@ pipeline{
                 script {
                     openshift.withCluster() {
                         openshift.withProject(TOOLS_NAMESPACE) {
-                            def dcTemplate = openshift.process('-f',
-                                '${SOURCE_REPO_URL_RAW}/${BRANCH}/tools/openshift/api.dc.yaml',
+                            def dcTemplate = openshift.process("-f",
+                                "${SOURCE_REPO_URL_RAW}/${BRANCH}/tools/openshift/api.dc.yaml",
                                 "REPO_NAME=${REPO_NAME}", "HOST_ROUTE=${DEV_HOST_ROUTE}")
 
                             echo "Applying Deployment ${REPO_NAME}"
