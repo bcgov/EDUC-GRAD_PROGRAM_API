@@ -61,11 +61,13 @@ pipeline{
                             echo "Applying Deployment ${REPO_NAME}"
                             openshift.apply(dcTemplate)
                             def dc = openshift.selector("dc", "${REPO_NAME}-dc")
+                            def rollout = dc.rollout()
 
                             echo "Waiting for deployment to roll out"
                             // Wait for deployments to roll out
                             timeout(10) {
-                                dc.rollout().latest().status('--watch=true')
+                                rollout.latest()
+                                rollout.status('--watch=true')
                             }
                         }
                     }
