@@ -24,8 +24,7 @@ pipeline{
                             echo "Applying Deployment ${REPO_NAME}-dc"
                             openshift.apply(
                                     openshift.process('-f', '${SOURCE_REPO_URL_RAW}/${BRANCH}/tools/openshift/api.dc.yaml',
-                                            "REPO_NAME=${REPO_NAME}", "NAMESPACE=${OCP_PROJECT}",
-                                            "HOST_ROUTE=${REPO_NAME}-${APP_SUBDOMAIN_SUFFIX}.${APP_DOMAIN}")
+                                            "REPO_NAME=${REPO_NAME}", "HOST_ROUTE=${REPO_NAME}-${APP_SUBDOMAIN_SUFFIX}.${APP_DOMAIN}")
                             )
                             def rollout = openshift.selector("dc", "${REPO_NAME}-dc").rollout()
                             echo "Waiting for deployment to roll out"
