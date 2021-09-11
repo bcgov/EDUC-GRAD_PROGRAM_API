@@ -67,7 +67,7 @@ pipeline{
                             // Wait for deployments to roll out
                             timeout(10) {
                                 rollout.latest()
-                                rollout.status('--watch=true')
+                                rollout.status('--watch=true', 'loglevel=10')
                             }
                         }
                     }
