@@ -56,9 +56,9 @@ objects:
                 - configMapRef:
                     name: educ-grad-api-config-map
                 - configMapRef:
-                    name: educ-grad-assessment-api-config-map
+                    name: educ-grad-program-api-config-map
                 - secretRef:
-                    name: api-assessment-db-secret
+                    name: api-grad-program-db-secret
                 - secretRef:
                     name: grad-keycloak-pk-secret
               resources: {}
