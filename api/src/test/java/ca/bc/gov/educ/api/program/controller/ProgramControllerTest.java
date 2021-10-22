@@ -209,13 +209,13 @@ public class ProgramControllerTest {
         ruleEntity.setProgramCode("2018-EN");
         ruleEntity.setRequirementName("Match");
         ruleEntity.setRuleCode("200");
-        ruleEntity.setSpecialProgramCode("FI");
+        ruleEntity.setOptionalProgramCode("FI");
         gradRuleDetails.add(ruleEntity);
         GradRuleDetails ruleEntity2 = new GradRuleDetails();
         ruleEntity.setProgramCode("2018-EN");
         ruleEntity.setRequirementName("Match");
         ruleEntity.setRuleCode("200");
-        ruleEntity.setSpecialProgramCode("FI");
+        ruleEntity.setOptionalProgramCode("FI");
         gradRuleDetails.add(ruleEntity2);
         
         Mockito.when(programService.getSpecificRuleDetails(ruleCode)).thenReturn(gradRuleDetails);
@@ -223,19 +223,19 @@ public class ProgramControllerTest {
 	}	
 	
 	@Test
-	public void testGetAllSpecialProgramsByID() {
-		String specialProgramID=new UUID(1, 1).toString();
+	public void testGetAllOptionalProgramsByID() {
+		String optionalProgramID=new UUID(1, 1).toString();
 		OptionalProgram optionalProgram = new OptionalProgram();
 		optionalProgram.setGraduationProgramCode("ABCD");
 		optionalProgram.setOptionalProgramID(new UUID(1, 1));
 		optionalProgram.setOptProgramCode("FI");
 		optionalProgram.setOptionalProgramName("EFGH");
-		Mockito.when(programService.getSpecialProgramByID(UUID.fromString(specialProgramID))).thenReturn(optionalProgram);
-		programController.getAllSpecialProgramsByID(specialProgramID);
+		Mockito.when(programService.getOptionalProgramByID(UUID.fromString(optionalProgramID))).thenReturn(optionalProgram);
+		programController.getAllOptionalProgramsByID(optionalProgramID);
 	}
 	
 	@Test
-	public void testGetAllSpecialPrograms() {
+	public void testGetAllOptionalPrograms() {
 		List<OptionalProgram> list = new ArrayList<OptionalProgram>();
 		OptionalProgram optionalProgram = new OptionalProgram();
 		optionalProgram.setGraduationProgramCode("ABCD");
@@ -249,135 +249,135 @@ public class ProgramControllerTest {
 		optionalProgram.setOptProgramCode("FI");
 		optionalProgram.setOptionalProgramName("EFGH");
 		list.add(optionalProgram);
-		Mockito.when(programService.getAllSpecialProgramList()).thenReturn(list);
-		programController.getAllSpecialPrograms();
+		Mockito.when(programService.getAllOptionalProgramList()).thenReturn(list);
+		programController.getAllOptionalPrograms();
 	}
 	
 	
 	@Test
-	public void testGetAllSpecialPrograms_emptyList() {
-		Mockito.when(programService.getAllSpecialProgramList()).thenReturn(new ArrayList<>());
-		programController.getAllSpecialPrograms();
+	public void testGetAllOptionalPrograms_emptyList() {
+		Mockito.when(programService.getAllOptionalProgramList()).thenReturn(new ArrayList<>());
+		programController.getAllOptionalPrograms();
 	}
 	
 		
 	@Test
-	public void testetSpecialProgramRulesByProgramCodeAndSpecialProgramCode() {
+	public void testetOptionalProgramRulesByProgramCodeAndOptionalProgramCode() {
 		String programCode = "2018-EN";
-		String specialProgramCode="FI";
+		String optionalProgramCode="FI";
 		OptionalProgram optionalProgram = new OptionalProgram();
 		optionalProgram.setGraduationProgramCode("ABCD");
 		optionalProgram.setOptionalProgramID(new UUID(1, 1));
 		optionalProgram.setOptProgramCode("FI");
 		optionalProgram.setOptionalProgramName("EFGH");
-		Mockito.when(programService.getSpecialProgram(programCode,specialProgramCode)).thenReturn(optionalProgram);
-		programController.getSpecialPrograms(programCode,specialProgramCode);
+		Mockito.when(programService.getOptionalProgram(programCode,optionalProgramCode)).thenReturn(optionalProgram);
+		programController.getOptionalPrograms(programCode,optionalProgramCode);
 	}
 	
 	@Test
-	public void testCreateGradSpecialPrograms() {
+	public void testCreateGradOptionalPrograms() {
 		OptionalProgram obj = new OptionalProgram();
 		obj.setGraduationProgramCode("AB");
 		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptProgramCode("FI");
 		obj.setOptionalProgramName("French Immersion");
-		Mockito.when(programService.createGradSpecialProgram(obj)).thenReturn(obj);
-		programController.createGradSpecialPrograms(obj);
+		Mockito.when(programService.createGradOptionalProgram(obj)).thenReturn(obj);
+		programController.createGradOptionalPrograms(obj);
 	}
 	
 	@Test
-	public void testCreateGradSpecialPrograms_error() {
+	public void testCreateGradOptionalPrograms_error() {
 		OptionalProgram obj = new OptionalProgram();
 		obj.setGraduationProgramCode("AB");
 		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptionalProgramName("French Immersion");
-		Mockito.when(programService.createGradSpecialProgram(obj)).thenReturn(obj);
-		programController.createGradSpecialPrograms(obj);
+		Mockito.when(programService.createGradOptionalProgram(obj)).thenReturn(obj);
+		programController.createGradOptionalPrograms(obj);
 	}
 	
 	@Test
-	public void testUpdateGradSpecialPrograms() {
+	public void testUpdateGradOptionalPrograms() {
 		OptionalProgram obj = new OptionalProgram();
 		obj.setGraduationProgramCode("AB");
 		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptProgramCode("FI");
 		obj.setOptionalProgramName("French Immersion");
-		Mockito.when(programService.updateGradSpecialPrograms(obj)).thenReturn(obj);
-		programController.updateGradSpecialPrograms(obj);
+		Mockito.when(programService.updateGradOptionalPrograms(obj)).thenReturn(obj);
+		programController.updateGradOptionalPrograms(obj);
 	}
 	
 	@Test
-	public void testUpdateGradSpecialPrograms_error() {
+	public void testUpdateGradOptionalPrograms_error() {
 		OptionalProgram obj = new OptionalProgram();
 		obj.setGraduationProgramCode("AB");
 		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptionalProgramName("French Immersion");
-		Mockito.when(programService.updateGradSpecialPrograms(obj)).thenReturn(obj);
-		programController.updateGradSpecialPrograms(obj);
+		Mockito.when(programService.updateGradOptionalPrograms(obj)).thenReturn(obj);
+		programController.updateGradOptionalPrograms(obj);
 	}
 	
 	@Test
-	public void testDeleteSpecialPrograms() {
-		String specialProgramID = new UUID(1, 1).toString();
-		Mockito.when(programService.deleteGradSpecialPrograms(UUID.fromString(specialProgramID))).thenReturn(1);
-		programController.deleteGradSpecialPrograms(specialProgramID);
+	public void testDeleteOptionalPrograms() {
+		String optionalProgramID = new UUID(1, 1).toString();
+		Mockito.when(programService.deleteGradOptionalPrograms(UUID.fromString(optionalProgramID))).thenReturn(1);
+		programController.deleteGradOptionalPrograms(optionalProgramID);
 	}
 	
 	
 	@Test
-	public void testCreateGradSpecialProgramRules() {		
+	public void testCreateGradOptionalProgramRules() {		
 		OptionalProgramRequirement obj = new OptionalProgramRequirement();
 		obj.setOptionalProgramRequirementID(new UUID(1, 1));
 		OptionalProgramRequirementCode code = new OptionalProgramRequirementCode();
 		code.setOptProReqCode("100");
 		obj.setOptionalProgramRequirementCode(code);
-		Mockito.when(programService.createGradSpecialProgramRules(obj)).thenReturn(obj);
-		programController.createGradSpecialProgramRules(obj);
+		Mockito.when(programService.createGradOptionalProgramRules(obj)).thenReturn(obj);
+		programController.createGradOptionalProgramRules(obj);
 	}
 	
 	@Test
-	public void testCreateGradSpecialProgramRules_error() {		
+	public void testCreateGradOptionalProgramRules_error() {		
 		OptionalProgramRequirement obj = new OptionalProgramRequirement();
 		obj.setOptionalProgramRequirementID(new UUID(1, 1));
 		OptionalProgramRequirementCode code = new OptionalProgramRequirementCode();
 		code.setOptProReqCode("100");
 		obj.setOptionalProgramRequirementCode(code);
-		Mockito.when(programService.createGradSpecialProgramRules(obj)).thenReturn(obj);
-		programController.createGradSpecialProgramRules(obj);
+		Mockito.when(programService.createGradOptionalProgramRules(obj)).thenReturn(obj);
+		programController.createGradOptionalProgramRules(obj);
 	}
 	
 	@Test
-	public void testUpdateGradSpecialProgramRules() {
+	public void testUpdateGradOptionalProgramRules() {
 		OptionalProgramRequirement obj = new OptionalProgramRequirement();
 		obj.setOptionalProgramRequirementID(new UUID(1, 1));
 		OptionalProgramRequirementCode code = new OptionalProgramRequirementCode();
 		code.setOptProReqCode("100");
 		obj.setOptionalProgramRequirementCode(code);
-		Mockito.when(programService.updateGradSpecialProgramRules(obj)).thenReturn(obj);
-		programController.updateGradSpecialProgramRules(obj);
+		Mockito.when(programService.updateGradOptionalProgramRules(obj)).thenReturn(obj);
+		programController.updateGradOptionalProgramRules(obj);
 	}
 	
 	@Test
-	public void testUpdateGradSpecialProgramRules_error() {
+	public void testUpdateGradOptionalProgramRules_error() {
 		OptionalProgramRequirement obj = new OptionalProgramRequirement();
 		obj.setOptionalProgramRequirementID(new UUID(1, 1));
 		OptionalProgramRequirementCode code = new OptionalProgramRequirementCode();
 		code.setOptProReqCode("101");
 		obj.setOptionalProgramRequirementCode(code);
-		Mockito.when(programService.updateGradSpecialProgramRules(obj)).thenReturn(obj);
-		programController.updateGradSpecialProgramRules(obj);
+		Mockito.when(programService.updateGradOptionalProgramRules(obj)).thenReturn(obj);
+		programController.updateGradOptionalProgramRules(obj);
 	}
 	
 	@Test
-	public void testDeleteGradSpecialProgramRules() {
+	public void testDeleteGradOptionalProgramRules() {
 		UUID ruleID = new UUID(1, 1);
-		Mockito.when(programService.deleteGradSpecialProgramRules(ruleID)).thenReturn(1);
-		programController.deleteGradSpecialProgramRules(ruleID.toString());		
+		Mockito.when(programService.deleteGradOptionalProgramRules(ruleID)).thenReturn(1);
+		programController.deleteGradOptionalProgramRules(ruleID.toString());		
 		
 	}
 	
 	@Test
-	public void testGetAllSpecialProgramRules() {
+	public void testGetAllOptionalProgramRules() {
 		List<OptionalProgramRequirement> list = new ArrayList<>();
 		OptionalProgramRequirement obj = new OptionalProgramRequirement();
 		obj.setOptionalProgramRequirementID(new UUID(1, 1));
@@ -386,14 +386,14 @@ public class ProgramControllerTest {
 		obj.setOptionalProgramRequirementCode(code);
     	list.add(obj);    	
 		
-		Mockito.when(programService.getAllSpecialProgramRulesList()).thenReturn(list);
-		programController.getAllSpecialProgramRules();
+		Mockito.when(programService.getAllOptionalProgramRulesList()).thenReturn(list);
+		programController.getAllOptionalProgramRules();
 	}
 	
 	@Test
-	public void testGetAllSpecialProgramRules_emptyList() {		
-		Mockito.when(programService.getAllSpecialProgramRulesList()).thenReturn(new ArrayList<>());
-		programController.getAllSpecialProgramRules();
+	public void testGetAllOptionalProgramRules_emptyList() {		
+		Mockito.when(programService.getAllOptionalProgramRulesList()).thenReturn(new ArrayList<>());
+		programController.getAllOptionalProgramRules();
 	}
 	
 	@Test
@@ -418,8 +418,8 @@ public class ProgramControllerTest {
 	
 	
 	@Test
-	public void testGetSpecialProgramRulesByProgramCodeAndSpecialProgramCode() {
-		String specialProgramCode= "FI";
+	public void testGetOptionalProgramRulesByProgramCodeAndOptionalProgramCode() {
+		String optionalProgramCode= "FI";
 		String programCode="2018-EN";
 		
 		List<OptionalProgramRequirement> list = new ArrayList<>();
@@ -432,16 +432,16 @@ public class ProgramControllerTest {
 		gradProgramRule.setOptionalProgramRequirementCode(code);
     	list.add(gradProgramRule);
     	
-		Mockito.when(programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,specialProgramCode)).thenReturn(list);
-		programController.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode);
+		Mockito.when(programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode,optionalProgramCode)).thenReturn(list);
+		programController.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode, optionalProgramCode);
 	}
 	
 	@Test
-	public void testGetSpecialProgramRulesByProgramCodeAndSpecialProgramCode_emptyList() {
-		String specialProgramCode= "FI";
+	public void testGetOptionalProgramRulesByProgramCodeAndOptionalProgramCode_emptyList() {
+		String optionalProgramCode= "FI";
 		String programCode="2018-EN";
-		Mockito.when(programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode,specialProgramCode)).thenReturn(new ArrayList<>());
-		programController.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, specialProgramCode);
+		Mockito.when(programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode,optionalProgramCode)).thenReturn(new ArrayList<>());
+		programController.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode, optionalProgramCode);
 	}
 	
 	@Test

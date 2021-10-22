@@ -142,35 +142,35 @@ public class ProgramServiceTest {
 		ruleObj.setProgramRequirementCode(code2);
 		gradProgramRule.add(ruleObj);
 		
-		List<OptionalProgramRequirementEntity> gradSpecialProgramRule = new ArrayList<OptionalProgramRequirementEntity>();
-		OptionalProgramRequirementEntity specialRuleObj = new OptionalProgramRequirementEntity();
+		List<OptionalProgramRequirementEntity> gradOptionalProgramRule = new ArrayList<OptionalProgramRequirementEntity>();
+		OptionalProgramRequirementEntity optionalRuleObj = new OptionalProgramRequirementEntity();
 		OptionalProgramEntity opE = new OptionalProgramEntity();
 		opE.setOptionalProgramID(new UUID(1, 1));
-		specialRuleObj.setOptionalProgramID(opE);
+		optionalRuleObj.setOptionalProgramID(opE);
 		OptionalProgramRequirementCodeEntity code3 = new OptionalProgramRequirementCodeEntity();
 		code3.setOptProReqCode("100");
-		specialRuleObj.setOptionalProgramRequirementCode(code3);
-		gradSpecialProgramRule.add(specialRuleObj);
-		specialRuleObj = new OptionalProgramRequirementEntity();
+		optionalRuleObj.setOptionalProgramRequirementCode(code3);
+		gradOptionalProgramRule.add(optionalRuleObj);
+		optionalRuleObj = new OptionalProgramRequirementEntity();
 		OptionalProgramEntity opE2 = new OptionalProgramEntity();
 		opE2.setOptionalProgramID(new UUID(1, 1));;
-		specialRuleObj.setOptionalProgramID(opE2);
+		optionalRuleObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity code4 = new OptionalProgramRequirementCodeEntity();
 		code4.setOptProReqCode("100");
-		specialRuleObj.setOptionalProgramRequirementCode(code4);
-		gradSpecialProgramRule.add(specialRuleObj);
+		optionalRuleObj.setOptionalProgramRequirementCode(code4);
+		gradOptionalProgramRule.add(optionalRuleObj);
 		
-		OptionalProgramEntity specialProgramObj = new OptionalProgramEntity();
-		specialProgramObj.setGraduationProgramCode("2018-EN");
-		specialProgramObj.setOptProgramCode("FI");
-		specialProgramObj.setOptionalProgramName("French Immersion");
-		specialProgramObj.setOptionalProgramID(new UUID(1, 1));
+		OptionalProgramEntity optionalProgramObj = new OptionalProgramEntity();
+		optionalProgramObj.setGraduationProgramCode("2018-EN");
+		optionalProgramObj.setOptProgramCode("FI");
+		optionalProgramObj.setOptionalProgramName("French Immersion");
+		optionalProgramObj.setOptionalProgramID(new UUID(1, 1));
 		
-		UUID specialProgramID = new UUID(1, 1);
+		UUID optionalProgramID = new UUID(1, 1);
 		
 		Mockito.when(programRequirementRepository.findByRuleCode(ruleCode)).thenReturn(gradProgramRule);
-		Mockito.when(optionalProgramRequirementRepository.findByRuleCode(ruleCode)).thenReturn(gradSpecialProgramRule);
-		Mockito.when(optionalProgramRepository.findById(specialProgramID)).thenReturn(Optional.of(specialProgramObj));
+		Mockito.when(optionalProgramRequirementRepository.findByRuleCode(ruleCode)).thenReturn(gradOptionalProgramRule);
+		Mockito.when(optionalProgramRepository.findById(optionalProgramID)).thenReturn(Optional.of(optionalProgramObj));
 		List<GradRuleDetails> result = programService.getSpecificRuleDetails(ruleCode);
 		assertEquals(4,result.size());
 	}
@@ -286,19 +286,19 @@ public class ProgramServiceTest {
 		graduationProgramCodeEntity.setProgramCode("ABCD");
 		graduationProgramCodeEntity.setProgramName("EFGH");
 		Mockito.when(graduationProgramCodeRepository.findIfChildRecordsExists(programCode)).thenReturn(Optional.empty());
-		Mockito.when(graduationProgramCodeRepository.findIfSpecialProgramsExists(programCode)).thenReturn(Optional.empty());
+		Mockito.when(graduationProgramCodeRepository.findIfOptionalProgramsExists(programCode)).thenReturn(Optional.empty());
 		programService.deleteGradPrograms(programCode);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void testDeleteGradProgram_exception_specialprogramcheck() {
+	public void testDeleteGradProgram_exception_optionalprogramcheck() {
 		String programCode="2018-EN";
 		GraduationProgramCodeEntity graduationProgramCodeEntity = new GraduationProgramCodeEntity();
 		graduationProgramCodeEntity.setProgramCode("ABCD");
 		graduationProgramCodeEntity.setProgramName("EFGH");
 		Optional<GraduationProgramCodeEntity> ent = Optional.of(graduationProgramCodeEntity);
 		Mockito.when(graduationProgramCodeRepository.findIfChildRecordsExists(programCode)).thenReturn(Optional.empty());
-		Mockito.when(graduationProgramCodeRepository.findIfSpecialProgramsExists(programCode)).thenReturn(ent);
+		Mockito.when(graduationProgramCodeRepository.findIfOptionalProgramsExists(programCode)).thenReturn(ent);
 		programService.deleteGradPrograms(programCode);
 	}
 	
@@ -323,95 +323,95 @@ public class ProgramServiceTest {
 	
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void testCreateGradSpecialProgram_exception() {
-		OptionalProgram gradSpecialProgram = new OptionalProgram();
-		gradSpecialProgram.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgram.setOptProgramCode("FI");
-		gradSpecialProgram.setGraduationProgramCode("ABCD");
-		gradSpecialProgram.setOptionalProgramName("EFGH");
+	public void testCreateGradOptionalProgram_exception() {
+		OptionalProgram gradOptionalProgram = new OptionalProgram();
+		gradOptionalProgram.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgram.setOptProgramCode("FI");
+		gradOptionalProgram.setGraduationProgramCode("ABCD");
+		gradOptionalProgram.setOptionalProgramName("EFGH");
 		
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
-		Optional<OptionalProgramEntity> ent = Optional.of(gradSpecialProgramEntity);
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(ent);
-		programService.createGradSpecialProgram(gradSpecialProgram);
-		
-	}
-	
-	@Test
-	public void testCreateGradSpecialProgram() {
-		OptionalProgram gradSpecialProgram = new OptionalProgram();
-		gradSpecialProgram.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgram.setOptProgramCode("FI");
-		gradSpecialProgram.setGraduationProgramCode("ABCD");
-		gradSpecialProgram.setOptionalProgramName("EFGH");
-		
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(Optional.empty());
-		Mockito.when(optionalProgramRepository.save(gradSpecialProgramEntity)).thenReturn(gradSpecialProgramEntity);
-		programService.createGradSpecialProgram(gradSpecialProgram);
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
+		Optional<OptionalProgramEntity> ent = Optional.of(gradOptionalProgramEntity);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(ent);
+		programService.createGradOptionalProgram(gradOptionalProgram);
 		
 	}
 	
 	@Test
-	public void testUpdateGradSpecialProgram() {
-		OptionalProgram gradSpecialProgram = new OptionalProgram();
-		gradSpecialProgram.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgram.setOptProgramCode("FI");
-		gradSpecialProgram.setGraduationProgramCode("ABCD");
-		gradSpecialProgram.setOptionalProgramName("EFGH");
+	public void testCreateGradOptionalProgram() {
+		OptionalProgram gradOptionalProgram = new OptionalProgram();
+		gradOptionalProgram.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgram.setOptProgramCode("FI");
+		gradOptionalProgram.setGraduationProgramCode("ABCD");
+		gradOptionalProgram.setOptionalProgramName("EFGH");
+		
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.empty());
+		Mockito.when(optionalProgramRepository.save(gradOptionalProgramEntity)).thenReturn(gradOptionalProgramEntity);
+		programService.createGradOptionalProgram(gradOptionalProgram);
+		
+	}
+	
+	@Test
+	public void testUpdateGradOptionalProgram() {
+		OptionalProgram gradOptionalProgram = new OptionalProgram();
+		gradOptionalProgram.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgram.setOptProgramCode("FI");
+		gradOptionalProgram.setGraduationProgramCode("ABCD");
+		gradOptionalProgram.setOptionalProgramName("EFGH");
 		OptionalProgramEntity toBeSaved = new OptionalProgramEntity();
 		toBeSaved.setOptionalProgramID(new UUID(1, 1));
 		toBeSaved.setOptProgramCode("FI");
 		toBeSaved.setGraduationProgramCode("ABCD");
 		toBeSaved.setOptionalProgramName("EFGH");
 		
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
-		Optional<OptionalProgramEntity> ent = Optional.of(gradSpecialProgramEntity);
-		Mockito.when(optionalProgramRepository.findById(gradSpecialProgram.getOptionalProgramID())).thenReturn(ent);
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(Optional.empty());
-		Mockito.when(optionalProgramRepository.save(gradSpecialProgramEntity)).thenReturn(toBeSaved);
-		programService.updateGradSpecialPrograms(gradSpecialProgram);
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
+		Optional<OptionalProgramEntity> ent = Optional.of(gradOptionalProgramEntity);
+		Mockito.when(optionalProgramRepository.findById(gradOptionalProgram.getOptionalProgramID())).thenReturn(ent);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.empty());
+		Mockito.when(optionalProgramRepository.save(gradOptionalProgramEntity)).thenReturn(toBeSaved);
+		programService.updateGradOptionalPrograms(gradOptionalProgram);
 		
 	}
 	
 	@Test
-	public void testUpdateGradSpecialProgram_optionalProgramChanged() {
+	public void testUpdateGradOptionalProgram_optionalProgramChanged() {
 		validation.clear();
-		OptionalProgram gradSpecialProgram = new OptionalProgram();
-		gradSpecialProgram.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgram.setOptProgramCode("FI");
-		gradSpecialProgram.setGraduationProgramCode("ABCD");
-		gradSpecialProgram.setOptionalProgramName("EFGH");
+		OptionalProgram gradOptionalProgram = new OptionalProgram();
+		gradOptionalProgram.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgram.setOptProgramCode("FI");
+		gradOptionalProgram.setGraduationProgramCode("ABCD");
+		gradOptionalProgram.setOptionalProgramName("EFGH");
 		OptionalProgramEntity toBeSaved = new OptionalProgramEntity();
 		toBeSaved.setOptionalProgramID(new UUID(1, 1));
 		toBeSaved.setOptProgramCode("FI");
 		toBeSaved.setGraduationProgramCode("ABCD");
 		toBeSaved.setOptionalProgramName("EFGH");
 		
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("DD");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
-		Optional<OptionalProgramEntity> ent = Optional.of(gradSpecialProgramEntity);
-		Mockito.when(optionalProgramRepository.findById(gradSpecialProgram.getOptionalProgramID())).thenReturn(ent);
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(Optional.of(gradSpecialProgramEntity));
-		Mockito.when(optionalProgramRepository.save(gradSpecialProgramEntity)).thenReturn(toBeSaved);
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("DD");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
+		Optional<OptionalProgramEntity> ent = Optional.of(gradOptionalProgramEntity);
+		Mockito.when(optionalProgramRepository.findById(gradOptionalProgram.getOptionalProgramID())).thenReturn(ent);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.of(gradOptionalProgramEntity));
+		Mockito.when(optionalProgramRepository.save(gradOptionalProgramEntity)).thenReturn(toBeSaved);
 		
 		try {
-			programService.updateGradSpecialPrograms(gradSpecialProgram);
+			programService.updateGradOptionalPrograms(gradOptionalProgram);
 		} catch (GradBusinessRuleException e) {
 			List<String> errors = validation.getErrors();
 			assertEquals(1, errors.size());
@@ -420,15 +420,15 @@ public class ProgramServiceTest {
 	}
 	
 	@Test
-	public void testGetSpecialProgramRulesByProgramCodeAndSpecialProgramCode() {
+	public void testGetOptionalProgramRulesByProgramCodeAndOptionalProgramCode() {
 		String programCode="2018-EN";
 		String optionalProgramCode="FI";
 		
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("2018-EN");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("French Immersion");
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("2018-EN");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("French Immersion");
 		
 		List<OptionalProgramRequirementEntity> gradProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
 		OptionalProgramRequirementEntity ruleObj = new OptionalProgramRequirementEntity();
@@ -448,50 +448,50 @@ public class ProgramServiceTest {
 		ruleObj.setOptionalProgramRequirementCode(code2);
 		gradProgramRuleList.add(ruleObj);
 		
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradSpecialProgramEntity));
-		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradSpecialProgramEntity.getOptionalProgramID())).thenReturn(gradProgramRuleList);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradOptionalProgramEntity));
+		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradOptionalProgramEntity.getOptionalProgramID())).thenReturn(gradProgramRuleList);
 		
-		programService.getSpecialProgramRulesByProgramCodeAndSpecialProgramCode(programCode, optionalProgramCode);
+		programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode, optionalProgramCode);
 	}
 	
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void testUpdateGradSpecialProgram_excpetion() {
-		OptionalProgram gradSpecialProgram = new OptionalProgram();
-		gradSpecialProgram.setGraduationProgramCode("ABCD");
-		gradSpecialProgram.setOptionalProgramName("EFGHF");
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradSpecialProgram.getGraduationProgramCode(),gradSpecialProgram.getOptProgramCode())).thenReturn(Optional.empty());
-		programService.updateGradSpecialPrograms(gradSpecialProgram);			
+	public void testUpdateGradOptionalProgram_excpetion() {
+		OptionalProgram gradOptionalProgram = new OptionalProgram();
+		gradOptionalProgram.setGraduationProgramCode("ABCD");
+		gradOptionalProgram.setOptionalProgramName("EFGHF");
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.empty());
+		programService.updateGradOptionalPrograms(gradOptionalProgram);			
 	}
 	
 	
 	@Test
-	public void testDeleteGradSpecialProgram() {
+	public void testDeleteGradOptionalProgram() {
 		UUID ruleID=new UUID(1, 1);
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
-		Mockito.when(optionalProgramRepository.findById(ruleID)).thenReturn(Optional.of(gradSpecialProgramEntity));
-		programService.deleteGradSpecialPrograms(ruleID);
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
+		Mockito.when(optionalProgramRepository.findById(ruleID)).thenReturn(Optional.of(gradOptionalProgramEntity));
+		programService.deleteGradOptionalPrograms(ruleID);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void testDeleteGradSpecialProgram_exception() {
+	public void testDeleteGradOptionalProgram_exception() {
 		UUID ruleID=new UUID(1, 1);
-		OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("ABCD");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("EFGH");
+		OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
 		Mockito.when(optionalProgramRepository.findById(ruleID)).thenReturn(Optional.empty());
-		programService.deleteGradSpecialPrograms(ruleID);
+		programService.deleteGradOptionalPrograms(ruleID);
 	}
 	
 		
 	@Test
-	public void testGetAllSpecialProgramList() {
+	public void testGetAllOptionalProgramList() {
 		List<OptionalProgramEntity> gradProgramList = new ArrayList<>();
 		OptionalProgramEntity obj = new OptionalProgramEntity();
 		obj.setOptionalProgramID(new UUID(1, 1));;
@@ -504,60 +504,60 @@ public class ProgramServiceTest {
 		obj.setOptProgramCode("FI");
 		gradProgramList.add(obj);
 		Mockito.when(optionalProgramRepository.findAll()).thenReturn(gradProgramList);
-		programService.getAllSpecialProgramList();
+		programService.getAllOptionalProgramList();
 	}
 	
 	@Test
-	public void testGetSpecialProgramByID() {
-		UUID specialProgramID = new UUID(1, 1);
+	public void testGetOptionalProgramByID() {
+		UUID optionalProgramID = new UUID(1, 1);
 		OptionalProgramEntity obj = new OptionalProgramEntity();
 		obj.setOptionalProgramID(new UUID(1, 1));;
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");
-		Mockito.when(optionalProgramRepository.findById(specialProgramID)).thenReturn(Optional.of(obj));
-		programService.getSpecialProgramByID(specialProgramID);
+		Mockito.when(optionalProgramRepository.findById(optionalProgramID)).thenReturn(Optional.of(obj));
+		programService.getOptionalProgramByID(optionalProgramID);
 	}	
 	
 	@Test
-	public void testGetSpecialProgram() {
+	public void testGetOptionalProgram() {
 		String programCode = "2018-EN";
-		String specialProgramCode = "FI";
+		String optionalProgramCode = "FI";
 		OptionalProgramEntity obj = new OptionalProgramEntity();
 		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setGraduationProgramCode("2018-EN");
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");        
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, specialProgramCode)).thenReturn(Optional.of(obj));
-		programService.getSpecialProgram(programCode, specialProgramCode);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(obj));
+		programService.getOptionalProgram(programCode, optionalProgramCode);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void testGetSpecialProgram_exception() {
+	public void testGetOptionalProgram_exception() {
 		String programCode = "2018-EN";
-		String specialProgramCode = "FI";
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, specialProgramCode)).thenReturn(Optional.empty());
-		programService.getSpecialProgram(programCode, specialProgramCode);
+		String optionalProgramCode = "FI";
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.empty());
+		programService.getOptionalProgram(programCode, optionalProgramCode);
 	}
 	
 	@Test
-	public void testDeleteGradSpecialProgramRules() {
+	public void testDeleteGradOptionalProgramRules() {
 		UUID ruleID=new UUID(1, 1);
-		OptionalProgramRequirementEntity gradSpecialProgramRulesEntity = new OptionalProgramRequirementEntity();
+		OptionalProgramRequirementEntity gradOptionalProgramRulesEntity = new OptionalProgramRequirementEntity();
 		OptionalProgramRequirementCodeEntity code = new OptionalProgramRequirementCodeEntity();
 		code.setOptProReqCode("100");
-		gradSpecialProgramRulesEntity.setOptionalProgramRequirementCode(code);
+		gradOptionalProgramRulesEntity.setOptionalProgramRequirementCode(code);
 		OptionalProgramEntity opE = new OptionalProgramEntity();
 		opE.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramRulesEntity.setOptionalProgramID(opE);
-		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.of(gradSpecialProgramRulesEntity));
-		programService.deleteGradSpecialProgramRules(ruleID);
+		gradOptionalProgramRulesEntity.setOptionalProgramID(opE);
+		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.of(gradOptionalProgramRulesEntity));
+		programService.deleteGradOptionalProgramRules(ruleID);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
-	public void deleteGradSpecialProgram_exception_exception() {
+	public void deleteGradOptionalProgram_exception_exception() {
 		UUID ruleID=new UUID(1, 1);
 		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.empty());
-		programService.deleteGradSpecialProgramRules(ruleID);
+		programService.deleteGradOptionalProgramRules(ruleID);
 	}
 	
 	@Test
@@ -650,11 +650,11 @@ public class ProgramServiceTest {
 		gradProgramRuleList.add(ruleObj);
     	Mockito.when(programRequirementRepository.findByGraduationProgramCode(programCode)).thenReturn(gradProgramRuleList);
     	
-    	OptionalProgramEntity gradSpecialProgramEntity = new OptionalProgramEntity();
-		gradSpecialProgramEntity.setGraduationProgramCode("2018-EN");
-		gradSpecialProgramEntity.setOptionalProgramID(new UUID(1, 1));
-		gradSpecialProgramEntity.setOptProgramCode("FI");
-		gradSpecialProgramEntity.setOptionalProgramName("French Immersion");
+    	OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
+		gradOptionalProgramEntity.setGraduationProgramCode("2018-EN");
+		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
+		gradOptionalProgramEntity.setOptProgramCode("FI");
+		gradOptionalProgramEntity.setOptionalProgramName("French Immersion");
 		
 		List<OptionalProgramRequirementEntity> gradOptionalProgramRuleList = new ArrayList<OptionalProgramRequirementEntity>();
 		OptionalProgramRequirementEntity ruleOptionalObj = new OptionalProgramRequirementEntity();
@@ -674,8 +674,8 @@ public class ProgramServiceTest {
 		ruleOptionalObj.setOptionalProgramRequirementCode(codeOp3);
 		gradOptionalProgramRuleList.add(ruleOptionalObj);
 		Mockito.when(graduationProgramCodeRepository.findById(programCode)).thenReturn(Optional.of(codeG));
-		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradSpecialProgramEntity));
-		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradSpecialProgramEntity.getOptionalProgramID())).thenReturn(gradOptionalProgramRuleList);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradOptionalProgramEntity));
+		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradOptionalProgramEntity.getOptionalProgramID())).thenReturn(gradOptionalProgramRuleList);
 		
 		GradProgramAlgorithmData data = programService.getAllAlgorithmData(programCode, optionalProgramCode);
 		assertNotNull(data);
