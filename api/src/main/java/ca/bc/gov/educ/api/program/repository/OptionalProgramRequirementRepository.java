@@ -12,11 +12,11 @@ import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
 @Repository
 public interface OptionalProgramRequirementRepository extends JpaRepository<OptionalProgramRequirementEntity, UUID> {
 
-    @Query("select c from OptionalProgramRequirementEntity c where c.optionalProgramID.optionalProgramID=:specialProgramID")
-	List<OptionalProgramRequirementEntity> findByOptionalProgramID(UUID specialProgramID);
+    @Query("select c from OptionalProgramRequirementEntity c where c.optionalProgramID.optionalProgramID=:optionalProgramID")
+	List<OptionalProgramRequirementEntity> findByOptionalProgramID(UUID optionalProgramID);
 
-    @Query("select p.id from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.optProReqCode=:ruleCode and p.optionalProgramID=:specialProgramID")
-	UUID findIdByRuleCode(String ruleCode,UUID specialProgramID);
+    @Query("select p.id from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.optProReqCode=:ruleCode and p.optionalProgramID=:optionalProgramID")
+	UUID findIdByRuleCode(String ruleCode,UUID optionalProgramID);
     
     @Query("select p from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.optProReqCode=:ruleCode")
     List<OptionalProgramRequirementEntity> findByRuleCode(String ruleCode);
