@@ -39,7 +39,7 @@ public class OptionalProgramTransformer {
         return programList;
     }
 
-    public OptionalProgramEntity transformToEntity(OptionalProgram gradSpecialProgram) {
-        return modelMapper.map(gradSpecialProgram, OptionalProgramEntity.class);
+    public OptionalProgramEntity transformToEntity(OptionalProgram gradOptionalProgram) {
+        return modelMapper.map(gradOptionalProgram, OptionalProgramEntity.class);
     }
 }
