@@ -22,24 +22,24 @@ public class OptionalProgramRequirementCodeTransformer {
     	return modelMapper.map(optionalProgramRequirementEntity, OptionalProgramRequirementCode.class);
     }
 
-    public OptionalProgramRequirementCode transformToDTO (Optional<OptionalProgramRequirementCodeEntity> gradSpecialProgramRuleEntity ) {
+    public OptionalProgramRequirementCode transformToDTO (Optional<OptionalProgramRequirementCodeEntity> gradOptionalProgramRuleEntity ) {
     	OptionalProgramRequirementCodeEntity cae = new OptionalProgramRequirementCodeEntity();
-        if (gradSpecialProgramRuleEntity.isPresent())
-            cae = gradSpecialProgramRuleEntity.get();
+        if (gradOptionalProgramRuleEntity.isPresent())
+            cae = gradOptionalProgramRuleEntity.get();
 
         return modelMapper.map(cae, OptionalProgramRequirementCode.class);
     }
 
-	public List<OptionalProgramRequirementCode> transformToDTO (Iterable<OptionalProgramRequirementCodeEntity> gradSpecialProgramRuleEntities ) {
+	public List<OptionalProgramRequirementCode> transformToDTO (Iterable<OptionalProgramRequirementCodeEntity> gradOptionalProgramRuleEntities ) {
 		List<OptionalProgramRequirementCode> programRuleList = new ArrayList<>();
-        for (OptionalProgramRequirementCodeEntity gradSpecialProgramRuleEntity : gradSpecialProgramRuleEntities) {
-        	OptionalProgramRequirementCode programRule =modelMapper.map(gradSpecialProgramRuleEntity, OptionalProgramRequirementCode.class);
+        for (OptionalProgramRequirementCodeEntity gradOptionalProgramRuleEntity : gradOptionalProgramRuleEntities) {
+        	OptionalProgramRequirementCode programRule =modelMapper.map(gradOptionalProgramRuleEntity, OptionalProgramRequirementCode.class);
         	programRuleList.add(programRule);
         }
         return programRuleList;
     }
 
-    public OptionalProgramRequirementCodeEntity transformToEntity(OptionalProgramRequirementCode gradSpecialProgramRule) {
-        return modelMapper.map(gradSpecialProgramRule, OptionalProgramRequirementCodeEntity.class);
+    public OptionalProgramRequirementCodeEntity transformToEntity(OptionalProgramRequirementCode gradOptionalProgramRule) {
+        return modelMapper.map(gradOptionalProgramRule, OptionalProgramRequirementCodeEntity.class);
     }
 }
