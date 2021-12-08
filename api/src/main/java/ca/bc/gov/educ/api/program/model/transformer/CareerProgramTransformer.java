@@ -35,8 +35,8 @@ public class CareerProgramTransformer {
 		List<CareerProgram> programList = new ArrayList<>();
         for (CareerProgramEntity courseEntity : courseEntities) {
         	CareerProgram program = modelMapper.map(courseEntity, CareerProgram.class);   
-        	program.setStartDate(EducGradProgramManagementApiUtils.parseTraxDate(program.getStartDate() != null ? program.getStartDate():null));
-        	program.setEndDate(EducGradProgramManagementApiUtils.parseTraxDate(program.getEndDate() != null ? program.getEndDate():null));
+        	program.setStartDate(EducGradProgramManagementApiUtils.parseDateFromString(program.getStartDate() != null ? program.getStartDate():null));
+        	program.setEndDate(EducGradProgramManagementApiUtils.parseDateFromString(program.getEndDate() != null ? program.getEndDate():null));
             programList.add(program);
         }
         return programList;

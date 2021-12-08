@@ -12,10 +12,10 @@ import lombok.EqualsAndHashCode;
 @Component
 public class RequirementTypeCode extends BaseModel {
 
-	private String reqTypeCode; 
-	private String label; 
+	private String reqTypeCode;
+	private String label;
 	private int displayOrder; 
-	private String description;	
+	private String description;
 	private Date effectiveDate; 
 	private Date expiryDate;
 	

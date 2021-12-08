@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class BaseModel {
-	private String createUser;	
+	private String createUser;
 	private Date createDate;	
-	private String updateUser;	
+	private String updateUser;
 	private Date updateDate;
 }

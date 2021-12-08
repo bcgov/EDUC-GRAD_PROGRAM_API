@@ -18,16 +18,16 @@ public class RequirementTypeCodeEntity extends BaseEntity {
     
 	@Id
 	@Column(name = "REQUIREMENT_TYPE_CODE", nullable = false)
-    private String reqTypeCode; 
+    private String reqTypeCode;
 	
 	@Column(name = "LABEL", nullable = true)
-    private String label; 
+    private String label;
 	
 	@Column(name = "DISPLAY_ORDER", nullable = true)
     private int displayOrder; 
 	
 	@Column(name = "DESCRIPTION", nullable = true)
-    private String description;	
+    private String description;
 	
 	@Column(name = "EFFECTIVE_DATE", nullable = true)
     private Date effectiveDate; 

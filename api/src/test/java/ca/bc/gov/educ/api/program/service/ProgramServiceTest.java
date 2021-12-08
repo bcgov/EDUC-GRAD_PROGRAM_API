@@ -179,7 +179,7 @@ public class ProgramServiceTest {
 	
 	@Test
 	public void testGetSpecificRuleDetails_noAssociatedRuleDetails() {
-		String ruleCode = "100";		
+		String ruleCode = "100";
 		Mockito.when(programRequirementRepository.findByRuleCode(ruleCode)).thenReturn(new ArrayList<ProgramRequirementEntity>());
 		Mockito.when(optionalProgramRequirementRepository.findByRuleCode(ruleCode)).thenReturn(new ArrayList<OptionalProgramRequirementEntity>());
 		List<GradRuleDetails> result = programService.getSpecificRuleDetails(ruleCode);

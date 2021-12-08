@@ -17,7 +17,7 @@ public class GradProgramManagementConfig implements WebMvcConfigurer {
 	RequestInterceptor requestInterceptor;
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(requestInterceptor);
+		registry.addInterceptor(requestInterceptor).addPathPatterns("/**");
 	}
 
 	@Bean

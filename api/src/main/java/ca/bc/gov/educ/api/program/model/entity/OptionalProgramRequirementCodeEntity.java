@@ -19,10 +19,10 @@ public class OptionalProgramRequirementCodeEntity  extends BaseEntity {
    
 	@Id
 	@Column(name = "OPTIONAL_PROGRAM_RQMT_CODE", nullable = false)
-    private String optProReqCode; 
+    private String optProReqCode;
 	
 	@Column(name = "LABEL", nullable = false)
-    private String label; 
+    private String label;
 	
 	@Column(name = "DESCRIPTION", nullable = true)
     private String description;
@@ -47,5 +47,5 @@ public class OptionalProgramRequirementCodeEntity  extends BaseEntity {
     private String activeRequirement;
 	
 	@Column(name = "REQUIREMENT_CATEGORY", nullable = true)
-    private String requirementCategory;	
+    private String requirementCategory;
 }

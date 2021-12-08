@@ -20,8 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
 import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
@@ -112,7 +110,6 @@ public class ProgramService {
     @Autowired
 	GradValidation validation;
     
-    
     @Value("${validation.value.requirementType}")
 	String errorStringRequirementTypeInvalid;
     
@@ -126,17 +123,11 @@ public class ProgramService {
    	String errorStringProgramCodeRuleCheck;
     
     @Value("${validation.value.programcode_optionalprogram_check}")
-   	String errorStringProgramCodeOptionalProgramCheck;    
+   	String errorStringProgramCodeOptionalProgramCheck;
     
 	private static final String CREATE_USER="createUser";
 	private static final String CREATE_DATE="createDate";
     
-    @Autowired
-    RestTemplate restTemplate;
-    
-    @Autowired
-    WebClient webClient;
-
     @SuppressWarnings("unused")
 	private static Logger logger = LoggerFactory.getLogger(ProgramService.class);
 
