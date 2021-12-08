@@ -74,11 +74,9 @@ public class GradValidation {
     		addError(messagesHelper.missingValue(fieldName));
     		return false;
     	}
-    	if (requiredValue instanceof String) {
-        	if (StringUtils.isBlank((String)requiredValue)) {
-        		addError(messagesHelper.missingValue(fieldName));
-        		return false;
-        	}
+    	if (requiredValue instanceof String && StringUtils.isBlank((String)requiredValue)) {
+			addError(messagesHelper.missingValue(fieldName));
+			return false;
     	}
     	return true;
     }
@@ -102,6 +100,8 @@ public class GradValidation {
     public void clear() {
     	errorList.get().clear();
     	warningList.get().clear();
+		errorList.remove();
+		warningList.remove();
     	
     }
 }

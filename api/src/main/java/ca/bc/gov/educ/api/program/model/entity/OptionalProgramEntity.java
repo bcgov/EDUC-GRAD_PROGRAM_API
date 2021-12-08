@@ -30,13 +30,13 @@ public class OptionalProgramEntity extends BaseEntity {
     private UUID optionalProgramID; 
 	
 	@Column(name = "OPTIONAL_PROGRAM_CODE", nullable = true)
-    private String optProgramCode; 
+    private String optProgramCode;
 	
 	@Column(name = "LABEL", nullable = true)
     private String optionalProgramName;
 	
 	@Column(name = "DESCRIPTION", nullable = true)
-    private String description; 
+    private String description;
 	
 	@Column(name = "DISPLAY_ORDER", nullable = true)
     private int displayOrder; 

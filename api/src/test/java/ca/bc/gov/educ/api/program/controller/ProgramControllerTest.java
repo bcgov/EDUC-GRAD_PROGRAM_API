@@ -196,7 +196,7 @@ public class ProgramControllerTest {
 	public void testDeleteGradProgramRules() {
 		UUID ruleID = new UUID(1, 1);
 		Mockito.when(programService.deleteGradProgramRules(ruleID)).thenReturn(1);
-		programController.deleteGradProgramRules(ruleID.toString());		
+		programController.deleteGradProgramRules(ruleID.toString());
 		
 	}	
 	
@@ -372,7 +372,7 @@ public class ProgramControllerTest {
 	public void testDeleteGradOptionalProgramRules() {
 		UUID ruleID = new UUID(1, 1);
 		Mockito.when(programService.deleteGradOptionalProgramRules(ruleID)).thenReturn(1);
-		programController.deleteGradOptionalProgramRules(ruleID.toString());		
+		programController.deleteGradOptionalProgramRules(ruleID.toString());
 		
 	}
 	
@@ -554,7 +554,7 @@ public class ProgramControllerTest {
 	
 	@Test
 	public void testGetSpecificCareerProgramCode_noContent() {
-		String requirementType = "AB";	
+		String requirementType = "AB";
 		Mockito.when(programService.getSpecificCareerProgramCode(requirementType)).thenReturn(null);
 		programController.getSpecificCareerProgramCode(requirementType);
 		Mockito.verify(programService).getSpecificCareerProgramCode(requirementType);
@@ -601,7 +601,7 @@ public class ProgramControllerTest {
 	
 	@Test
 	public void testGetSpecificRequirementTypesCode_noContent() {
-		String requirementType = "AB";	
+		String requirementType = "AB";
 		Mockito.when(programService.getSpecificRequirementTypeCode(requirementType)).thenReturn(null);
 		programController.getSpecificRequirementTypeCode(requirementType);
 		Mockito.verify(programService).getSpecificRequirementTypeCode(requirementType);
