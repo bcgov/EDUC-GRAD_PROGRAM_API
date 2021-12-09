@@ -1,0 +1,2 @@
+UPDATE PROGRAM_REQUIREMENT_CODE SET NOT_MET_DESC = 'Fewer than 3 Level 12 courses (or fewer than 2 level 12 courses with Social Studies 11)' WHERE PROGRAM_REQUIREMENT_CODE = '503';
+UPDATE PROGRAM_REQUIREMENT_CODE SET NOT_MET_DESC = 'Fewer than 3 Level 12 courses (or fewer than 2 level 12 courses with Social Studies 11)' WHERE PROGRAM_REQUIREMENT_CODE = '505';
