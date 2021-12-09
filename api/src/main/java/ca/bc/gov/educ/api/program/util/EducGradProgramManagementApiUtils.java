@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 
 public class EducGradProgramManagementApiUtils {
 
+    private EducGradProgramManagementApiUtils() {}
+
     public static String formatDate (Date date) {
         if (date == null)
             return null;
@@ -51,42 +53,30 @@ public class EducGradProgramManagementApiUtils {
 
         return date;
     }
-    
+
     public static String parseDateFromString (String sessionDate) {
         if (sessionDate == null)
             return null;
-
-        
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(EducGradProgramApiConstants.DEFAULT_DATE_FORMAT);
-        Date date = new Date();
-
-        try {
-            date = simpleDateFormat.parse(sessionDate);
-            LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            return localDate.getYear() +"/"+ String.format("%02d", localDate.getMonthValue());
-            
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }       
+        return parseDateByFormat(sessionDate, EducGradProgramApiConstants.DEFAULT_DATE_FORMAT);
     }
-    
+
     public static String parseTraxDate (String sessionDate) {
         if (sessionDate == null)
             return null;
+        return parseDateByFormat(sessionDate, EducGradProgramApiConstants.TRAX_DATE_FORMAT);
+    }
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(EducGradProgramApiConstants.DEFAULT_DATE_FORMAT);
-        Date date = new Date();
-
+    private static String parseDateByFormat(final String sessionDate, final String dateFormat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         try {
-            date = simpleDateFormat.parse(sessionDate);
+            Date date = simpleDateFormat.parse(sessionDate);
             LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return localDate.getYear() +"/"+ String.format("%02d", localDate.getMonthValue());
-            
+
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
-        }       
+        }
     }
 
 	public static HttpHeaders getHeaders (String accessToken)
