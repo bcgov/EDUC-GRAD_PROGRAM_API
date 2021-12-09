@@ -40,11 +40,14 @@ spring:
     location: classpath:db/migration
 
 #Logging properties
-logback:
-  rollingpolicy:
-    max-history: 1
-    max-file-size: 20MB
-    clean-history-on-start: true
+logging:
+  file:
+    name: /logs/app.log
+  logback:
+    rollingpolicy:
+      max-history: 1
+      max-file-size: 20MB
+      clean-history-on-start: true
   pattern:
     #  file: "%d | [${HOSTNAME}] | %clr(%5p) | [%t]   | %logger{36}:%L | %msg%n"
     #  console: "%d | [${HOSTNAME}] | %clr(%5p) | [%t]   | %logger{36}:%L | %msg%n"
