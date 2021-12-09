@@ -32,7 +32,7 @@ public class ProgramRequirementEntity  extends BaseEntity {
     private UUID programRequirementID; 
 	
 	@Column(name = "GRADUATION_PROGRAM_CODE", nullable = false)
-    private String graduationProgramCode; 
+    private String graduationProgramCode;
 	
 	@OneToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "PROGRAM_REQUIREMENT_CODE", referencedColumnName = "PROGRAM_REQUIREMENT_CODE")

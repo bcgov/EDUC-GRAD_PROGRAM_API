@@ -8,9 +8,9 @@ import lombok.Data;
 @Component
 public class CareerProgram {
 	
-	private String code; 
-	private String description; 
-	private String startDate; 
+	private String code;
+	private String description;
+	private String startDate;
 	private String endDate;
 	
 	public String getCode() {

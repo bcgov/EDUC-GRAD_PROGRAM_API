@@ -14,9 +14,9 @@ import lombok.EqualsAndHashCode;
 public class OptionalProgram extends BaseModel {
 
 	private UUID optionalProgramID; 
-	private String optProgramCode; 
+	private String optProgramCode;
 	private String optionalProgramName;
-	private String description; 
+	private String description;
 	private int displayOrder; 
 	private Date effectiveDate;
 	private Date expiryDate;

@@ -12,9 +12,9 @@ import lombok.EqualsAndHashCode;
 @Component
 public class GraduationProgramCode extends BaseModel {
 
-	private String programCode; 
-	private String programName; 
-	private String description; 
+	private String programCode;
+	private String programName;
+	private String description;
 	private int displayOrder; 
 	private Date effectiveDate;
 	private Date expiryDate;

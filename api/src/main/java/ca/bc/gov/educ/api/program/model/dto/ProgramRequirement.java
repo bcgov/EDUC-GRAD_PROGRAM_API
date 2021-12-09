@@ -13,6 +13,6 @@ import lombok.EqualsAndHashCode;
 public class ProgramRequirement extends BaseModel {
 
 	private UUID programRequirementID; 
-	private String graduationProgramCode; 
+	private String graduationProgramCode;
 	private ProgramRequirementCode programRequirementCode;
 }

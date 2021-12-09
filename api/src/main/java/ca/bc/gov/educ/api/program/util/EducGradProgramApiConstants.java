@@ -1,8 +1,5 @@
 package ca.bc.gov.educ.api.program.util;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -12,6 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EducGradProgramApiConstants {
+
+    private EducGradProgramApiConstants() {}
+
+    public static final String CORRELATION_ID = "correlationID";
 
     //API end-point Mapping constants
     public static final String API_ROOT_MAPPING = "";
@@ -48,9 +49,7 @@ public class EducGradProgramApiConstants {
     
     //Default Attribute value constants
     public static final String DEFAULT_CREATED_BY = "API_GRAD_PROGRAM";
-    public static final Date DEFAULT_CREATED_TIMESTAMP = new Date();
     public static final String DEFAULT_UPDATED_BY = "API_GRAD_PROGRAM";
-    public static final Date DEFAULT_UPDATED_TIMESTAMP = new Date();
 
     //Default Date format constants
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";

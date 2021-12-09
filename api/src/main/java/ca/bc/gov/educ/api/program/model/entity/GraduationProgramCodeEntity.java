@@ -18,13 +18,13 @@ public class GraduationProgramCodeEntity extends BaseEntity {
    
 	@Id
 	@Column(name = "GRADUATION_PROGRAM_CODE", nullable = false)
-    private String programCode; 
+    private String programCode;
 	
 	@Column(name = "LABEL", nullable = true)
-    private String programName; 
+    private String programName;
 	
 	@Column(name = "DESCRIPTION", nullable = true)
-    private String description; 
+    private String description;
 	
 	@Column(name = "DISPLAY_ORDER", nullable = true)
     private int displayOrder; 

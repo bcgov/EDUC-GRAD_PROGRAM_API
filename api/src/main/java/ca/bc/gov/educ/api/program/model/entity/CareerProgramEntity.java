@@ -16,10 +16,10 @@ public class CareerProgramEntity  {
    
 	@Id
 	@Column(name = "PRGM_CODE", nullable = false)
-    private String code; 
+    private String code;
 	
 	@Column(name = "PRGM_NAME", nullable = true)
-    private String description; 
+    private String description;
 
 	@Column(name = "START_DATE", nullable = true)
     private Date startDate; 

@@ -10,8 +10,8 @@ import lombok.EqualsAndHashCode;
 @Component
 public class ProgramRequirementCode extends BaseModel {
 
-	private String proReqCode; 
-	private String label; 
+	private String proReqCode;
+	private String label;
 	private String description;
 	private RequirementTypeCode requirementTypeCode;
 	private String requiredCredits;
@@ -19,5 +19,5 @@ public class ProgramRequirementCode extends BaseModel {
 	private String requiredLevel;
 	private String languageOfInstruction;
 	private String activeRequirement;
-	private String requirementCategory;	
+	private String requirementCategory;
 }
