@@ -1,0 +1,2 @@
+UPDATE OPTIONAL_PROGRAM SET LABEL='International Baccalaureate as a Certificate candidate' WHERE OPTIONAL_PROGRAM_CODE='BC';
+UPDATE OPTIONAL_PROGRAM SET LABEL='International Baccalaureate as a Diploma candidate' WHERE OPTIONAL_PROGRAM_CODE='BD';
