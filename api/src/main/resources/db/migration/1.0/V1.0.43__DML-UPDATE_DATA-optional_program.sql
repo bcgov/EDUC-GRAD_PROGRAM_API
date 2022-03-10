@@ -1,0 +1,4 @@
+UPDATE OPTIONAL_PROGRAM SET DESCRIPTION='Students on the 1986 B.C. Graduation program who were also reported as participating in the Advanced Placement program.' WHERE OPTIONAL_PROGRAM_ID='D543D62B6C8ACC95E0539AE9228E9A95';
+UPDATE OPTIONAL_PROGRAM SET DESCRIPTION='Students on the 1986 B.C. Graduation program who were also reported as participating in the International Baccalaureate program as a Certificate candidate.' WHERE OPTIONAL_PROGRAM_ID='D543D62B6C8BCC95E0539AE9228E9A95';
+UPDATE OPTIONAL_PROGRAM SET DESCRIPTION='Students on the 1986 B.C. Graduation program who were also reported as participating in the International Baccalaureate program as a Diploma candidate.' WHERE OPTIONAL_PROGRAM_ID='D543D62B6C8CCC95E0539AE9228E9A95';
+UPDATE OPTIONAL_PROGRAM SET DESCRIPTION='Students on the 1986 B.C. Graduation program who were also reported as participating in a Career program.' WHERE OPTIONAL_PROGRAM_ID='D543D62B6C8DCC95E0539AE9228E9A95';
