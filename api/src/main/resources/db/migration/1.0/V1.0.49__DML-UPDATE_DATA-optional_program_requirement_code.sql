@@ -1,0 +1,1 @@
+UPDATE OPTIONAL_PROGRAM_RQMT_CODE SET LABEL='The school has reported the student requesting a French Certificate or the students is in SD 093 and on the SCCP program', DESCRIPTION='The school has reported the student requesting a French Certificate or the students is in SD 093 and on the SCCP program' WHERE OPTIONAL_PROGRAM_RQMT_CODE='956';
