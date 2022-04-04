@@ -48,4 +48,7 @@ public class OptionalProgramRequirementCodeEntity  extends BaseEntity {
 	
 	@Column(name = "REQUIREMENT_CATEGORY", nullable = true)
     private String requirementCategory;
+
+    @Column(name = "TRAX_REQ_NUMBER", nullable = false)
+    private String traxReqNumber;
 }
