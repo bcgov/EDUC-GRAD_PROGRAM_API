@@ -1,0 +1,2 @@
+UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm identifies student courses taken after Adult student turns 18 (if a student’s projected grade date is > = 2012/07). Currently applies to the Adult Graduation Diploma Program only.' WHERE REQUIREMENT_TYPE_CODE='MAC18';
+UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm identifies student courses taken after Adult student turns 19 (if a student’s projected grade date is < 2012/07). Currently applies to the Adult Graduation Diploma Program only.' WHERE REQUIREMENT_TYPE_CODE='MAC19';
