@@ -13,6 +13,8 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import ca.bc.gov.educ.api.program.model.entity.*;
+import ca.bc.gov.educ.api.program.repository.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +33,6 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
-import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.RequirementTypeCodeEntity;
 import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
@@ -45,23 +41,18 @@ import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.RequirementTypeCodeTransformer;
-import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
-import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
 import ca.bc.gov.educ.api.program.util.GradValidation;
 
 @Service
 public class ProgramService {
 
     @Autowired
-    private GraduationProgramCodeRepository graduationProgramCodeRepository;  
+    private GraduationProgramCodeRepository graduationProgramCodeRepository;
 
-    @Autowired
+	@Autowired
+	private OptionalProgramCodeRepository optionalProgramCodeRepository;
+
+	@Autowired
     private GraduationProgramCodeTransformer graduationProgramCodeTransformer;    
     
     @Autowired
@@ -377,7 +368,16 @@ public class ProgramService {
 	}
 	
 	public List<OptionalProgram> getAllOptionalProgramList() {
-		return optionalProgramTransformer.transformToDTO(optionalProgramRepository.findAll());      
+		List<OptionalProgram> opList = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findAll());
+		opList.forEach(op-> {
+			if(op.getOptProgramCode() != null) {
+				Optional<OptionalProgramCodeEntity> ent = optionalProgramCodeRepository.findById(op.getOptProgramCode());
+				if(ent.isPresent()) {
+					op.setAssociatedCredentials(ent.get().getAssociatedCredentials());
+				}
+			}
+		});
+		return opList;
 	}
 	
 	public OptionalProgram getOptionalProgramByID(UUID optionalProgramID) {

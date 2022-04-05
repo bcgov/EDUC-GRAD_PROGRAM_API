@@ -1,11 +1,10 @@
 package ca.bc.gov.educ.api.program.model.dto;
 
-import java.util.Date;
-
-import org.springframework.stereotype.Component;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -18,5 +17,6 @@ public class GraduationProgramCode extends BaseModel {
 	private int displayOrder; 
 	private Date effectiveDate;
 	private Date expiryDate;
+	private String associatedCredential;
 			
 }
