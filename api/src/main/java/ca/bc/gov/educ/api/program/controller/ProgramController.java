@@ -211,7 +211,7 @@ public class ProgramController {
     @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM)
     @Operation(summary = "Find Optional Program", description = "Get Optional Program By ID", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<OptionalProgram> getAllOptionalProgramsByID(@PathVariable String optionalProgramID) { 
+    public ResponseEntity<OptionalProgram> getOptionalProgramByID(@PathVariable String optionalProgramID) {
     	logger.debug("getAllOptionalProgramsByID : ");
         return response.GET(programService.getOptionalProgramByID(UUID.fromString(optionalProgramID)));
     }

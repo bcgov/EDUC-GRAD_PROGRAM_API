@@ -223,7 +223,7 @@ public class ProgramControllerTest {
 	}	
 	
 	@Test
-	public void testGetAllOptionalProgramsByID() {
+	public void testGetOptionalProgramsByID() {
 		String optionalProgramID=new UUID(1, 1).toString();
 		OptionalProgram optionalProgram = new OptionalProgram();
 		optionalProgram.setGraduationProgramCode("ABCD");
@@ -231,7 +231,7 @@ public class ProgramControllerTest {
 		optionalProgram.setOptProgramCode("FI");
 		optionalProgram.setOptionalProgramName("EFGH");
 		Mockito.when(programService.getOptionalProgramByID(UUID.fromString(optionalProgramID))).thenReturn(optionalProgram);
-		programController.getAllOptionalProgramsByID(optionalProgramID);
+		programController.getOptionalProgramByID(optionalProgramID);
 	}
 	
 	@Test
