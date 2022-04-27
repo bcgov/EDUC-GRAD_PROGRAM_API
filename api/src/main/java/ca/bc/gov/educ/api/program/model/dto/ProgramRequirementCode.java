@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.Column;
+
 @Data
 @EqualsAndHashCode(callSuper=false)
 @Component
@@ -20,4 +22,6 @@ public class ProgramRequirementCode extends BaseModel {
 	private String languageOfInstruction;
 	private String activeRequirement;
 	private String requirementCategory;
+	private String traxReqNumber;
+	private String traxReqChar;
 }

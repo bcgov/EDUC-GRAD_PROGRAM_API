@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import ca.bc.gov.educ.api.program.model.entity.*;
+import ca.bc.gov.educ.api.program.repository.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,6 @@ import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
 import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
 import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
-import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.RequirementTypeCodeEntity;
 import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
@@ -45,23 +40,19 @@ import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
 import ca.bc.gov.educ.api.program.model.transformer.RequirementTypeCodeTransformer;
-import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
-import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
 import ca.bc.gov.educ.api.program.util.GradValidation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProgramService {
 
     @Autowired
-    private GraduationProgramCodeRepository graduationProgramCodeRepository;  
+    private GraduationProgramCodeRepository graduationProgramCodeRepository;
 
-    @Autowired
+	@Autowired
+	private OptionalProgramCodeRepository optionalProgramCodeRepository;
+
+	@Autowired
     private GraduationProgramCodeTransformer graduationProgramCodeTransformer;    
     
     @Autowired
@@ -131,12 +122,12 @@ public class ProgramService {
     @SuppressWarnings("unused")
 	private static Logger logger = LoggerFactory.getLogger(ProgramService.class);
 
-    
+	@Transactional(readOnly = true)
     public List<GraduationProgramCode> getAllProgramList() {
         return graduationProgramCodeTransformer.transformToDTO(graduationProgramCodeRepository.findAll()); 
     }
-	
-    
+
+	@Transactional(readOnly = true)
 	public List<GradRuleDetails> getSpecificRuleDetails(String ruleCode) {
 		List<GradRuleDetails> detailList = new ArrayList<>();
 		List<ProgramRequirement> gradProgramRule = programRequirementTransformer.transformToDTO(programRequirementRepository.findByRuleCode(ruleCode));
@@ -163,7 +154,8 @@ public class ProgramService {
 		}
 		return detailList;
 	}
-	
+
+	@Transactional
 	public GraduationProgramCode createGradProgram(GraduationProgramCode gradProgram) {
 		GraduationProgramCodeEntity toBeSavedObject = graduationProgramCodeTransformer.transformToEntity(gradProgram);
 		toBeSavedObject.setDisplayOrder(0);
@@ -195,6 +187,7 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional
 	public int deleteGradPrograms(@Valid String programCode) {
 		Optional<GraduationProgramCodeEntity> gradProgramOptional = graduationProgramCodeRepository.findIfChildRecordsExists(programCode);
 		if(gradProgramOptional.isPresent()) {
@@ -212,6 +205,7 @@ public class ProgramService {
 		}		
 	}
 
+	@Transactional
 	public ProgramRequirement createGradProgramRules(@Valid ProgramRequirement gradProgramRule) {
 		ProgramRequirementEntity toBeSavedObject = programRequirementTransformer.transformToEntity(gradProgramRule);
 		UUID existingObjectCheck = programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode());
@@ -224,6 +218,7 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional
 	public ProgramRequirement updateGradProgramRules(@Valid ProgramRequirement gradProgramRule) {
 		ProgramRequirementEntity sourceObject = programRequirementTransformer.transformToEntity(gradProgramRule);
 		Optional<ProgramRequirementEntity> gradProgramRulesOptional = programRequirementRepository.findById(gradProgramRule.getProgramRequirementID());
@@ -244,15 +239,16 @@ public class ProgramService {
 			return gradProgramRule;
 		}
 	}
-	
+
 	private boolean checkIfRuleCodeChanged(ProgramRequirementEntity gradRuleEnity, ProgramRequirementEntity sourceObject) {
 		return !sourceObject.getProgramRequirementCode().getProReqCode().equals(gradRuleEnity.getProgramRequirementCode().getProReqCode());		
 	}
-	
+
 	private boolean checkIfOptionalRuleCodeChanged(OptionalProgramRequirementEntity gradRuleEnity, OptionalProgramRequirementEntity sourceObject) {
 		return !sourceObject.getOptionalProgramRequirementCode().getOptProReqCode().equals(gradRuleEnity.getOptionalProgramRequirementCode().getOptProReqCode());
 	}
 
+	@Transactional
 	public int deleteGradProgramRules(UUID programRuleID) {
 		Optional<ProgramRequirementEntity> gradProgramRuleOptional = programRequirementRepository.findById(programRuleID);
 		if(gradProgramRuleOptional.isPresent()) {
@@ -264,11 +260,13 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public Boolean getRequirementByRequirementType(String typeCode) {
 		List<ProgramRequirementEntity> gradList = programRequirementRepository.existsByRequirementTypeCode(typeCode);
 		return !gradList.isEmpty();
 	}
 
+	@Transactional(readOnly = true)
 	public GraduationProgramCode getSpecificProgram(String programCode) {
 		Optional<GraduationProgramCodeEntity> gradResponse = graduationProgramCodeRepository.findById(programCode); 
 		if(gradResponse.isPresent()) {
@@ -277,7 +275,7 @@ public class ProgramService {
 		return null;
 	}
 
-	
+	@Transactional
 	public OptionalProgram createGradOptionalProgram(@Valid OptionalProgram optionalProgram) {
 		OptionalProgramEntity toBeSavedObject = optionalProgramTransformer.transformToEntity(optionalProgram);
 		Optional<OptionalProgramEntity> existingObjectCheck = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(optionalProgram.getGraduationProgramCode(),optionalProgram.getOptProgramCode());
@@ -315,6 +313,7 @@ public class ProgramService {
 				
 	}
 
+	@Transactional
 	public int deleteGradOptionalPrograms(UUID optionalProgramID) {
 		Optional<OptionalProgramEntity> gradOptionalProgramOptional = optionalProgramRepository.findById(optionalProgramID);
 		if(gradOptionalProgramOptional.isPresent()) {
@@ -325,11 +324,13 @@ public class ProgramService {
 			return 0;			
 		}
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<OptionalProgramRequirement>  getAllOptionalProgramRuleList(UUID optionalProgramID) {
         return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findByOptionalProgramID(optionalProgramID));
 	}
-	
+
+	@Transactional
 	public OptionalProgramRequirement createGradOptionalProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
 		OptionalProgramRequirementEntity toBeSavedObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
 		UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
@@ -342,7 +343,8 @@ public class ProgramService {
 			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(toBeSavedObject));	
 		}
 	}
-	
+
+	@Transactional
 	public OptionalProgramRequirement updateGradOptionalProgramRules(@Valid OptionalProgramRequirement optionalProgramRequirement) {
 		OptionalProgramRequirementEntity sourceObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
 		Optional<OptionalProgramRequirementEntity> gradOptionalProgramRulesOptional = optionalProgramRequirementRepository.findById(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
@@ -365,6 +367,7 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional
 	public int deleteGradOptionalProgramRules(UUID programRuleID) {
 		Optional<OptionalProgramRequirementEntity> gradOptionalProgramRuleOptional = optionalProgramRequirementRepository.findById(programRuleID);
 		if(gradOptionalProgramRuleOptional.isPresent()) {
@@ -375,15 +378,27 @@ public class ProgramService {
 			return 0;			
 		}
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<OptionalProgram> getAllOptionalProgramList() {
-		return optionalProgramTransformer.transformToDTO(optionalProgramRepository.findAll());      
+		List<OptionalProgram> opList = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findAll());
+		opList.forEach(op-> {
+			if(op.getOptProgramCode() != null) {
+				Optional<OptionalProgramCodeEntity> ent = optionalProgramCodeRepository.findById(op.getOptProgramCode());
+				if(ent.isPresent()) {
+					op.setAssociatedCredentials(ent.get().getAssociatedCredentials());
+				}
+			}
+		});
+		return opList;
 	}
-	
+
+	@Transactional(readOnly = true)
 	public OptionalProgram getOptionalProgramByID(UUID optionalProgramID) {
 		return optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(optionalProgramID));
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<OptionalProgramRequirement> getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(String programCode,
 			String optionalProgramCode) {
 		Optional<OptionalProgramEntity> existingObjectCheck = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode);
@@ -394,7 +409,8 @@ public class ProgramService {
 			return new ArrayList<>();
 		}
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<ProgramRequirement> getAllProgramRulesList() {
 		List<ProgramRequirement> programRuleList  = programRequirementTransformer.transformToDTO(programRequirementRepository.findAll());   
     	if(!programRuleList.isEmpty()) {
@@ -403,16 +419,17 @@ public class ProgramService {
         return programRuleList;
 	}
 
+	@Transactional(readOnly = true)
 	public List<ProgramRequirement> getAllProgramRuleList(String programCode) {
       	return programRequirementTransformer.transformToDTO(programRequirementRepository.findByGraduationProgramCode(programCode));
 	}
-	
-	
+
+	@Transactional(readOnly = true)
 	public List<OptionalProgramRequirement>  getAllOptionalProgramRulesList() {
         return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findAll());
 	}
 
-
+	@Transactional(readOnly = true)
 	public OptionalProgram getOptionalProgram(String programCode, String optionalProgramCode) {
 		Optional<OptionalProgramEntity> optionalRec = optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode);
 		if(optionalRec.isPresent()) {
@@ -423,16 +440,17 @@ public class ProgramService {
 		}
 	}
 
-
+	@Transactional(readOnly = true)
 	public List<ProgramRequirementCode> getAllProgramRequirementCodeList() {
 		return programRequirementCodeTransformer.transformToDTO(programRequirementCodeRepository.findAll()); 
 	}
-	
+
+	@Transactional(readOnly = true)
 	public List<OptionalProgramRequirementCode> getAllOptionalProgramRequirementCodeList() {
 		return optionalProgramRequirementCodeTransformer.transformToDTO(optionalProgramRequirementCodeRepository.findAll()); 
 	}
 
-
+	@Transactional(readOnly = true)
 	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode) {
 		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
 		GraduationProgramCode code = getSpecificProgram(programCode);
@@ -445,15 +463,15 @@ public class ProgramService {
 		}
 		return data;		
 	}
-	
-	@Transactional
+
+	@Transactional(readOnly = true)
 	public List<CareerProgram> getAllCareerProgramCodeList() {
 		List<CareerProgram> gradCareerProgramList = gradCareerProgramTransformer.transformToDTO(gradCareerProgramRepository.findAll());
 		Collections.sort(gradCareerProgramList, Comparator.comparing(CareerProgram::getCode));
 		return gradCareerProgramList;
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public CareerProgram getSpecificCareerProgramCode(String cpc) {
 		Optional<CareerProgramEntity> entity = gradCareerProgramRepository
 				.findById(StringUtils.toRootUpperCase(cpc));
@@ -463,14 +481,14 @@ public class ProgramService {
 			return null;
 		}
 	}
-	
-	
-	@Transactional
+
+
+	@Transactional(readOnly = true)
 	public List<RequirementTypeCode> getAllRequirementTypeCodeList() {
 		return requirementTypeCodeTransformer.transformToDTO(requirementTypeCodeRepository.findAll());
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public RequirementTypeCode getSpecificRequirementTypeCode(String typeCode) {
 		Optional<RequirementTypeCodeEntity> entity = requirementTypeCodeRepository
 				.findById(StringUtils.toRootUpperCase(typeCode));
@@ -480,7 +498,8 @@ public class ProgramService {
 			return null;
 		}
 	}
-	
+
+	@Transactional
 	public RequirementTypeCode createRequirementTypeCode(@Valid RequirementTypeCode gradRequirementTypes) {
 		RequirementTypeCodeEntity toBeSavedObject = requirementTypeCodeTransformer.transformToEntity(gradRequirementTypes);
 		Optional<RequirementTypeCodeEntity> existingObjectCheck = requirementTypeCodeRepository.findById(gradRequirementTypes.getReqTypeCode());
@@ -492,6 +511,7 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional
 	public RequirementTypeCode updateRequirementTypeCode(@Valid RequirementTypeCode gradRequirementTypes) {
 		Optional<RequirementTypeCodeEntity> gradRequirementTypesOptional = requirementTypeCodeRepository.findById(gradRequirementTypes.getReqTypeCode());
 		RequirementTypeCodeEntity sourceObject = requirementTypeCodeTransformer.transformToEntity(gradRequirementTypes);
@@ -505,6 +525,7 @@ public class ProgramService {
 		}
 	}
 
+	@Transactional
 	public int deleteRequirementTypeCode(@Valid String programType) {
 		Boolean isPresent = getRequirementByRequirementType(programType);
 		if(isPresent) {

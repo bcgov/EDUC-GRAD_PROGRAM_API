@@ -20,4 +20,6 @@ public class OptionalProgramRequirementCode extends BaseModel {
 	private String languageOfInstruction;
 	private String activeRequirement;
 	private String requirementCategory;
+	private String traxReqNumber;
+	private String traxReqChar;
 }

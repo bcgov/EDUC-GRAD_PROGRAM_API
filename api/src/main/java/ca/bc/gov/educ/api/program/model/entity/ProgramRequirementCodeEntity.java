@@ -48,4 +48,10 @@ public class ProgramRequirementCodeEntity  extends BaseEntity {
 	
 	@Column(name = "REQUIREMENT_CATEGORY", nullable = true)
     private String requirementCategory;
+
+    @Column(name = "TRAX_REQ_NUMBER", nullable = false)
+    private String traxReqNumber;
+
+    @Column(name = "TRAX_REQ_CHAR", nullable = true)
+    private String traxReqChar;
 }
