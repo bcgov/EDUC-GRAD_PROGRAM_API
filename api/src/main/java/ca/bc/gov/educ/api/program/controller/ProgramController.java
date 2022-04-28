@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +52,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @CrossOrigin
 @RestController
 @RequestMapping(EducGradProgramApiConstants.GRAD_PROGRAM_API_ROOT_MAPPING)
-@EnableResourceServer
 @OpenAPIDefinition(info = @Info(title = "API for Program Management Data.", description = "This API contains endpoints for Program Management Functionalities.", version = "1"), security = {@SecurityRequirement(name = "OAUTH2", scopes = {"READ_GRAD_PROGRAM_RULES_DATA","READ_GRAD_PROGRAM_CODE_DATA"})})
 public class ProgramController {
 
