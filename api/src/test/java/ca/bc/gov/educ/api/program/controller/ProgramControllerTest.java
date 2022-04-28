@@ -14,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
 import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
 import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
@@ -50,12 +48,6 @@ public class ProgramControllerTest {
 	
 	@Mock
 	MessageHelper messagesHelper;
-	
-	@Mock
-	OAuth2AuthenticationDetails oAuth2AuthenticationDetails;
-	
-	@Mock
-	SecurityContextHolder securityContextHolder;
 	
 	@Mock
 	ResponseEntity<List<GraduationProgramCode>> ent;
