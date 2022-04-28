@@ -67,8 +67,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 		if (correlationID != null) {
 			response.setHeader(EducGradProgramApiConstants.CORRELATION_ID, request.getHeader(EducGradProgramApiConstants.CORRELATION_ID));
 		}
-		// reset
-		ThreadLocalStateUtil.setCorrelationID(null);
-		ThreadLocalStateUtil.setCurrentUser(null);
+		// clear
+		ThreadLocalStateUtil.clear();
 	}
 }
