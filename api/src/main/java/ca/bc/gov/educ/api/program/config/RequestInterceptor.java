@@ -5,9 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import ca.bc.gov.educ.api.program.util.EducGradProgramApiConstants;
 import ca.bc.gov.educ.api.program.util.LogHelper;
+import ca.bc.gov.educ.api.program.util.ThreadLocalStateUtil;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -32,6 +36,19 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 			request.setAttribute("startTime", startTime);
 		}
 		validation.clear();
+		// correlationID
+		val correlationID = request.getHeader(EducGradProgramApiConstants.CORRELATION_ID);
+		if (correlationID != null) {
+			ThreadLocalStateUtil.setCorrelationID(correlationID);
+		}
+
+		// username
+		JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		Jwt jwt = (Jwt) authenticationToken.getCredentials();
+		String email = (String) jwt.getClaims().get("email");
+		if (email != null) {
+			ThreadLocalStateUtil.setCurrentUser(email);
+		}
 		return true;
 	}
 
@@ -50,5 +67,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 		if (correlationID != null) {
 			response.setHeader(EducGradProgramApiConstants.CORRELATION_ID, request.getHeader(EducGradProgramApiConstants.CORRELATION_ID));
 		}
+		// clear
+		ThreadLocalStateUtil.clear();
 	}
 }
