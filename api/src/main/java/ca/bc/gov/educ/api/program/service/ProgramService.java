@@ -137,6 +137,7 @@ public class ProgramService {
 				details.setRuleCode(gpR.getProgramRequirementCode().getProReqCode());
 				details.setRequirementName(gpR.getProgramRequirementCode().getLabel());			
 				details.setProgramCode(gpR.getGraduationProgramCode());
+				details.setTraxReqNumber(gpR.getProgramRequirementCode().getTraxReqNumber());
 				detailList.add(details);
 			});			
 		}
