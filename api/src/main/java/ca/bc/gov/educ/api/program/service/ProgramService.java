@@ -387,7 +387,7 @@ public class ProgramService {
 			if(op.getOptProgramCode() != null) {
 				Optional<OptionalProgramCodeEntity> ent = optionalProgramCodeRepository.findById(op.getOptProgramCode());
 				if(ent.isPresent()) {
-					op.setAssociatedCredentials(ent.get().getAssociatedCredentials());
+					op.setAssociatedCredential(ent.get().getAssociatedCredential());
 				}
 			}
 		});
