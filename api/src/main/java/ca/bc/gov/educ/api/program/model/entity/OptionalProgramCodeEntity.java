@@ -34,8 +34,8 @@ public class OptionalProgramCodeEntity extends BaseEntity {
 	@Column(name = "EXPIRY_DATE", nullable = true)
     private Date expiryDate;
 
-	@Column(name = "ASSOCIATED_CREDENTIALS", nullable = true)
-	private String associatedCredentials;
+	@Column(name = "ASSOCIATED_CREDENTIAL", nullable = true)
+	private String associatedCredential;
 
 
 
