@@ -1,4 +1,4 @@
-package ca.bc.gov.educ.api.gradstudent.util;
+package ca.bc.gov.educ.api.program.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
