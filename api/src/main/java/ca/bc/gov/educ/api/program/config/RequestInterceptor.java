@@ -7,6 +7,7 @@ import ca.bc.gov.educ.api.program.util.*;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
@@ -41,12 +42,16 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 		}
 
 		// username
-		JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-		Jwt jwt = (Jwt) authenticationToken.getCredentials();
-		String username = JwtUtil.getName(jwt);
-		if (username != null) {
-			ThreadLocalStateUtil.setCurrentUser(username);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth instanceof JwtAuthenticationToken) {
+			JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) auth;
+			Jwt jwt = (Jwt) authenticationToken.getCredentials();
+			String username = JwtUtil.getName(jwt);
+			if (username != null) {
+				ThreadLocalStateUtil.setCurrentUser(username);
+			}
 		}
+		
 		return true;
 	}
 
