@@ -21,7 +21,7 @@ public class OptionalProgram extends BaseModel {
 	private Date effectiveDate;
 	private Date expiryDate;
 	private String graduationProgramCode;
-	private String associatedCredentials;
+	private String associatedCredential;
 	
 	
 			

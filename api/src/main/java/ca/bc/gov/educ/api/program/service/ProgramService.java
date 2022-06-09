@@ -137,6 +137,7 @@ public class ProgramService {
 				details.setRuleCode(gpR.getProgramRequirementCode().getProReqCode());
 				details.setRequirementName(gpR.getProgramRequirementCode().getLabel());			
 				details.setProgramCode(gpR.getGraduationProgramCode());
+				details.setTraxReqNumber(gpR.getProgramRequirementCode().getTraxReqNumber());
 				detailList.add(details);
 			});			
 		}
@@ -386,7 +387,7 @@ public class ProgramService {
 			if(op.getOptProgramCode() != null) {
 				Optional<OptionalProgramCodeEntity> ent = optionalProgramCodeRepository.findById(op.getOptProgramCode());
 				if(ent.isPresent()) {
-					op.setAssociatedCredentials(ent.get().getAssociatedCredentials());
+					op.setAssociatedCredential(ent.get().getAssociatedCredential());
 				}
 			}
 		});
