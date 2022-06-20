@@ -38,6 +38,9 @@ public class GraduationProgramCodeEntity extends BaseEntity {
 	@Column(name = "ASSOCIATED_CREDENTIAL", nullable = true)
 	private String associatedCredential;
 
+	@Column(name = "ASSESM_RELEASE_DATE", nullable = true)
+	private Date assessmentReleaseDate;
+
 
 
 }
