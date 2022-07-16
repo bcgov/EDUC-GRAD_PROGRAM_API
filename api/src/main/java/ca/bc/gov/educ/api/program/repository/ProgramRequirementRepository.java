@@ -23,4 +23,7 @@ public interface ProgramRequirementRepository extends JpaRepository<ProgramRequi
     @Query("select p from ProgramRequirementEntity p  inner join ProgramRequirementCodeEntity c on p.programRequirementCode.proReqCode = c.proReqCode where p.programRequirementCode.proReqCode=:ruleCode")
 	List<ProgramRequirementEntity> findByRuleCode(String ruleCode);
 
+    @Query("select p from ProgramRequirementEntity p  inner join ProgramRequirementCodeEntity c on p.programRequirementCode.proReqCode = c.proReqCode where p.programRequirementCode.traxReqNumber=:traxReqNumber")
+    List<ProgramRequirementEntity> findByTraxReqNumber(String traxReqNumber);
+
 }

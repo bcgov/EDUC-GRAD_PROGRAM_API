@@ -212,8 +212,31 @@ public class ProgramControllerTest {
         
         Mockito.when(programService.getSpecificRuleDetails(ruleCode)).thenReturn(gradRuleDetails);
         programController.getSpecificRuleDetails(ruleCode);
-	}	
-	
+	}
+
+	@Test
+	public void testGetSpecificRuleDetailsByTraxReqNumber() {
+		String traxReqNumber="5";
+		List<GradRuleDetails> gradRuleDetails = new ArrayList<>();
+		GradRuleDetails ruleEntity = new GradRuleDetails();
+		ruleEntity.setProgramCode("2018-EN");
+		ruleEntity.setRequirementName("Match");
+		ruleEntity.setRuleCode("200");
+		ruleEntity.setTraxReqNumber(traxReqNumber);
+		ruleEntity.setOptionalProgramCode("FI");
+		gradRuleDetails.add(ruleEntity);
+		GradRuleDetails ruleEntity2 = new GradRuleDetails();
+		ruleEntity2.setProgramCode("2018-EN");
+		ruleEntity2.setRequirementName("Match");
+		ruleEntity2.setRuleCode("200");
+		ruleEntity2.setTraxReqNumber(traxReqNumber);
+		ruleEntity2.setOptionalProgramCode("FI");
+		gradRuleDetails.add(ruleEntity2);
+
+		Mockito.when(programService.getSpecificRuleDetailsByTraxReqNumber(traxReqNumber)).thenReturn(gradRuleDetails);
+		programController.getSpecificRuleDetailsByTraxReqNumber(traxReqNumber);
+	}
+
 	@Test
 	public void testGetOptionalProgramsByID() {
 		String optionalProgramID=new UUID(1, 1).toString();
