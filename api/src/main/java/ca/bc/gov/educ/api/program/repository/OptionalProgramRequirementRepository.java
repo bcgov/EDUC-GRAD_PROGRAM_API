@@ -21,6 +21,9 @@ public interface OptionalProgramRequirementRepository extends JpaRepository<Opti
     @Query("select p from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.optProReqCode=:ruleCode")
     List<OptionalProgramRequirementEntity> findByRuleCode(String ruleCode);
 
+    @Query("select p from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.traxReqNumber=:traxReqNumber")
+    List<OptionalProgramRequirementEntity> findByTraxReqNumber(String traxReqNumber);
+
     @Query("select p from OptionalProgramRequirementEntity p inner join OptionalProgramRequirementCodeEntity c on p.optionalProgramRequirementCode.optProReqCode = c.optProReqCode where c.requirementTypeCode=:typeCode")
 	List<OptionalProgramRequirementEntity> existsByRequirementTypeCode(String typeCode);
 

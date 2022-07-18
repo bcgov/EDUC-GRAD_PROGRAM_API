@@ -156,6 +156,35 @@ public class ProgramService {
 		return detailList;
 	}
 
+	@Transactional(readOnly = true)
+	public List<GradRuleDetails> getSpecificRuleDetailsByTraxReqNumber(String traxReqNumber) {
+		List<GradRuleDetails> detailList = new ArrayList<>();
+		List<ProgramRequirement> gradProgramRule = programRequirementTransformer.transformToDTO(programRequirementRepository.findByTraxReqNumber(traxReqNumber));
+		if(!gradProgramRule.isEmpty()) {
+			gradProgramRule.forEach(gpR -> {
+				GradRuleDetails details = new GradRuleDetails();
+				details.setRuleCode(gpR.getProgramRequirementCode().getProReqCode());
+				details.setRequirementName(gpR.getProgramRequirementCode().getLabel());
+				details.setProgramCode(gpR.getGraduationProgramCode());
+				details.setTraxReqNumber(gpR.getProgramRequirementCode().getTraxReqNumber());
+				detailList.add(details);
+			});
+		}
+		List<OptionalProgramRequirement> gradOptionalProgramRule = optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.findByTraxReqNumber(traxReqNumber));
+		if(!gradOptionalProgramRule.isEmpty()) {
+			gradOptionalProgramRule.forEach(gpR -> {
+				GradRuleDetails details = new GradRuleDetails();
+				details.setRuleCode(gpR.getOptionalProgramRequirementCode().getOptProReqCode());
+				details.setRequirementName(gpR.getOptionalProgramRequirementCode().getLabel());
+				OptionalProgram gradOptionalProgram = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findById(gpR.getOptionalProgramID().getOptionalProgramID()));
+				details.setProgramCode(gradOptionalProgram.getGraduationProgramCode());
+				details.setOptionalProgramCode(gradOptionalProgram.getOptProgramCode());
+				detailList.add(details);
+			});
+		}
+		return detailList;
+	}
+
 	@Transactional
 	public GraduationProgramCode createGradProgram(GraduationProgramCode gradProgram) {
 		GraduationProgramCodeEntity toBeSavedObject = graduationProgramCodeTransformer.transformToEntity(gradProgram);
