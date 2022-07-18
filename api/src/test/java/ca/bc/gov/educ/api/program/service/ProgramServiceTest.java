@@ -174,8 +174,60 @@ public class ProgramServiceTest {
 		List<GradRuleDetails> result = programService.getSpecificRuleDetails(ruleCode);
 		assertEquals(4,result.size());
 	}
-	
-	
+
+	@Test
+	public void testGetSpecificRuleDetailsByTraxReqNumber() {
+		String traxReqNumber = "5";
+		List<ProgramRequirementEntity> gradProgramRule = new ArrayList<ProgramRequirementEntity>();
+		ProgramRequirementEntity ruleObj = new ProgramRequirementEntity();
+		ruleObj.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity code = new ProgramRequirementCodeEntity();
+		code.setProReqCode("100");
+		code.setTraxReqNumber("5");
+		ruleObj.setProgramRequirementCode(code);
+		gradProgramRule.add(ruleObj);
+		ruleObj = new ProgramRequirementEntity();
+		ruleObj.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity code2 = new ProgramRequirementCodeEntity();
+		code2.setProReqCode("100");
+		code.setTraxReqNumber("5");
+		ruleObj.setProgramRequirementCode(code2);
+		gradProgramRule.add(ruleObj);
+
+		List<OptionalProgramRequirementEntity> gradOptionalProgramRule = new ArrayList<OptionalProgramRequirementEntity>();
+		OptionalProgramRequirementEntity optionalRuleObj = new OptionalProgramRequirementEntity();
+		OptionalProgramEntity opE = new OptionalProgramEntity();
+		opE.setOptionalProgramID(new UUID(1, 1));
+		optionalRuleObj.setOptionalProgramID(opE);
+		OptionalProgramRequirementCodeEntity code3 = new OptionalProgramRequirementCodeEntity();
+		code3.setOptProReqCode("100");
+		code3.setTraxReqNumber("5");
+		optionalRuleObj.setOptionalProgramRequirementCode(code3);
+		gradOptionalProgramRule.add(optionalRuleObj);
+		optionalRuleObj = new OptionalProgramRequirementEntity();
+		OptionalProgramEntity opE2 = new OptionalProgramEntity();
+		opE2.setOptionalProgramID(new UUID(1, 1));;
+		optionalRuleObj.setOptionalProgramID(opE2);
+		OptionalProgramRequirementCodeEntity code4 = new OptionalProgramRequirementCodeEntity();
+		code4.setOptProReqCode("100");
+		code4.setTraxReqNumber("5");
+		optionalRuleObj.setOptionalProgramRequirementCode(code4);
+		gradOptionalProgramRule.add(optionalRuleObj);
+
+		OptionalProgramEntity optionalProgramObj = new OptionalProgramEntity();
+		optionalProgramObj.setGraduationProgramCode("2018-EN");
+		optionalProgramObj.setOptProgramCode("FI");
+		optionalProgramObj.setOptionalProgramName("French Immersion");
+		optionalProgramObj.setOptionalProgramID(new UUID(1, 1));
+
+		UUID optionalProgramID = new UUID(1, 1);
+
+		Mockito.when(programRequirementRepository.findByTraxReqNumber(traxReqNumber)).thenReturn(gradProgramRule);
+		Mockito.when(optionalProgramRequirementRepository.findByTraxReqNumber(traxReqNumber)).thenReturn(gradOptionalProgramRule);
+		Mockito.when(optionalProgramRepository.findById(optionalProgramID)).thenReturn(Optional.of(optionalProgramObj));
+		List<GradRuleDetails> result = programService.getSpecificRuleDetailsByTraxReqNumber(traxReqNumber);
+		assertEquals(4,result.size());
+	}
 	
 	@Test
 	public void testGetSpecificRuleDetails_noAssociatedRuleDetails() {
