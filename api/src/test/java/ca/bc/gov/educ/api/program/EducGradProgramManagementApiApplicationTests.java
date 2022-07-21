@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class EducGradProgramManagementApiApplicationTests {
 
 	//@Test
-	void contextLoads() {
-	}
+	void contextLoads() {}
 
 }
