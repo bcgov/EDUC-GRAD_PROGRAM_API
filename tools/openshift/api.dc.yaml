@@ -61,7 +61,13 @@ objects:
                     name: educ-grad-program-api-config-map
                 - secretRef:
                     name: api-grad-program-db-secret
-              resources: {}
+              resources:
+                requests:
+                  cpu: "50m"
+                  #memory: "3Gi"
+                limits:
+                  cpu: "100m"
+                  #memory: "5Gi"
             - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
               name: "${REPO_NAME}-fluent-bit-sidecar"
               imagePullPolicy: Always
