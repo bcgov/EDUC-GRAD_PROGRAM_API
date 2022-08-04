@@ -31,7 +31,7 @@ objects:
             deploymentConfig: "${REPO_NAME}-dc"
         spec:
           containers:
-            - image: image-registry.openshift-image-registry.svc:5000/77c02f-tools/${REPO_NAME}:${TAG_NAME}
+            - image: image-registry.openshift-image-registry.svc:5000/${IS_NAMESPACE}/${REPO_NAME}:${TAG_NAME}
               imagePullPolicy: Always
               readinessProbe:
                 tcpSocket:
@@ -61,7 +61,13 @@ objects:
                     name: educ-grad-program-api-config-map
                 - secretRef:
                     name: api-grad-program-db-secret
-              resources: {}
+              resources:
+                requests:
+                  cpu: "50m"
+                  #memory: "3Gi"
+                limits:
+                  cpu: "100m"
+                  #memory: "5Gi"
             - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
               name: "${REPO_NAME}-fluent-bit-sidecar"
               imagePullPolicy: Always
@@ -143,6 +149,9 @@ objects:
 parameters:
   - name: REPO_NAME
     description: Application repository name
+    required: true
+  - name: IS_NAMESPACE
+    description: The namespace where the imagestream lives
     required: true
   - name: TAG_NAME
     description: Imagestream tag name

@@ -204,6 +204,15 @@ public class ProgramController {
     	logger.debug("getSpecificRuleDetails : ");
         return programService.getSpecificRuleDetails(ruleCode);
     }
+
+    @GetMapping(EducGradProgramApiConstants.GET_ALL_SPECIFIC_PROGRAM_RULES_BY_TRAX_SEQ_NUMBER)
+    @PreAuthorize(PermissionsContants.READ_GRAD_PROGRAM_RULES)
+    @Operation(summary = "Find Specific Rule Details by TraxReqNumber", description = "Get a Specific Rule Detail by TraxReqNumber", tags = { "Program Rules" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public List<GradRuleDetails> getSpecificRuleDetailsByTraxReqNumber(@PathVariable String traxReqNumber) {
+        logger.debug("getSpecificRuleDetails : ");
+        return programService.getSpecificRuleDetailsByTraxReqNumber(traxReqNumber);
+    }
     
     @GetMapping(EducGradProgramApiConstants.GET_ALL_OPTIONAL_PROGRAM_MAPPING_BY_ID)
     @PreAuthorize(PermissionsContants.READ_GRAD_OPTIONAL_PROGRAM)
