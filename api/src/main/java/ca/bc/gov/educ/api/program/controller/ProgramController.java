@@ -147,7 +147,7 @@ public class ProgramController {
     @Operation(summary = "Get Program Rules", description = "Get Program Rules", tags = { "Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
     public ResponseEntity<List<ProgramRequirement>> getAllProgramsRules(
-    		@RequestParam(value = "programCode", required = true) String programCode) { 
+    		@RequestParam(value = "programCode") String programCode) {
     	logger.debug("get All Program Rules : ");
     	List<ProgramRequirement> programRuleList = programService.getAllProgramRuleList(programCode);
     	if(!programRuleList.isEmpty()) {
@@ -190,7 +190,7 @@ public class ProgramController {
     @PreAuthorize(PermissionsContants.DELETE_GRAD_PROGRAM_RULES)
     @Operation(summary = "Delete a Program Rule", description = "Delete a Program Rule", tags = { "Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND.")})
-    public ResponseEntity<Void> deleteGradProgramRules(@PathVariable(value = "programRuleID", required = true) String programRuleID) { 
+    public ResponseEntity<Void> deleteGradProgramRules(@PathVariable(value = "programRuleID") String programRuleID) {
     	logger.debug("deleteGradProgramRules : ");    	
         return response.DELETE(programService.deleteGradProgramRules(UUID.fromString(programRuleID)));
     }
@@ -273,7 +273,7 @@ public class ProgramController {
     @PreAuthorize(PermissionsContants.DELETE_GRAD_OPTIONAL_PROGRAM)
     @Operation(summary = "Delete Optional Program", description = "Delete Optional Program", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
-    public ResponseEntity<Void> deleteGradOptionalPrograms(@PathVariable(value = "optionalProgramID", required = true) String optionalProgramID) { 
+    public ResponseEntity<Void> deleteGradOptionalPrograms(@PathVariable(value = "optionalProgramID") String optionalProgramID) {
     	logger.debug("deleteGradPrograms : ");
     	validation.requiredField(optionalProgramID, OPTIONAL_PROGRAM_ID);
     	if(validation.hasErrors()) {
@@ -317,7 +317,7 @@ public class ProgramController {
     @PreAuthorize(PermissionsContants.DELETE_GRAD_OPTIONAL_PROGRAM_RULES)
     @Operation(summary = "Delete Optional Program Rule", description = "Delete Optional Program Rule", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "NO CONTENT"), @ApiResponse(responseCode = "404", description = "NOT FOUND")})
-    public ResponseEntity<Void> deleteGradOptionalProgramRules(@PathVariable(value = "programRuleID", required = true) String programRuleID) { 
+    public ResponseEntity<Void> deleteGradOptionalProgramRules(@PathVariable(value = "programRuleID") String programRuleID) {
     	logger.debug("deleteGradProgramRules : ");    	
         return response.DELETE(programService.deleteGradOptionalProgramRules(UUID.fromString(programRuleID)));
     }
@@ -327,8 +327,8 @@ public class ProgramController {
     @Operation(summary = "Find Optional Program Rules by Program Code and Optional Program Code", description = "Get Optional Program Rules by Program Code and Optional Program Code", tags = { "Optional Program Rules" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "204", description = "NO CONTENT")})
     public ResponseEntity<List<OptionalProgramRequirement>> getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(
-    		@PathVariable(value = "programCode", required = true) String programCode, 
-    		@PathVariable(value = "optionalProgramCode", required = true) String optionalProgramCode) { 
+    		@PathVariable(value = "programCode") String programCode,
+    		@PathVariable(value = "optionalProgramCode") String optionalProgramCode) {
     	logger.debug("get Optional Program Rules By Program Code And Optional Program Code : ");
     	List<OptionalProgramRequirement> programRuleList = programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode,optionalProgramCode);
     	if(!programRuleList.isEmpty()) {
@@ -403,7 +403,7 @@ public class ProgramController {
     @PreAuthorize(PermissionsContants.READ_ALGORITHM_DATA)
     @Operation(summary = "Read All  Data required by Grad Algorithm", description = "Read All  Data required by Grad Algorithm", tags = { "Algorithm" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
-    public ResponseEntity<GradProgramAlgorithmData> getAllAlgorithmData(@RequestParam(value = "programCode", required = true) String programCode,@RequestParam(value = "optionalProgramCode", required = false) String optionalProgramCode) { 
+    public ResponseEntity<GradProgramAlgorithmData> getAllAlgorithmData(@RequestParam(value = "programCode") String programCode,@RequestParam(value = "optionalProgramCode", required = false) String optionalProgramCode) {
     	logger.debug("getAllAlgorithmData : ");
         return response.GET(programService.getAllAlgorithmData(programCode,optionalProgramCode));
     }
@@ -503,6 +503,15 @@ public class ProgramController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return response.DELETE(programService.deleteRequirementTypeCode(typeCode));
+    }
+
+    @GetMapping(EducGradProgramApiConstants.GET_DATA_FOR_ALGORITHM_LIST_MAPPING)
+    @PreAuthorize(PermissionsContants.READ_ALGORITHM_DATA)
+    @Operation(summary = "Read All  Data required by Grad Algorithm", description = "Read All  Data required by Grad Algorithm", tags = { "Algorithm" })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
+    public ResponseEntity<List<GradProgramAlgorithmData>> getAllAlgorithmDataList() {
+        logger.debug("getAllAlgorithmDataList : ");
+        return response.GET(programService.getAllAlgorithmDataList());
     }
     
 }

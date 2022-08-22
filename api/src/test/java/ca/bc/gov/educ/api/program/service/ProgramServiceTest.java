@@ -1,16 +1,10 @@
 package ca.bc.gov.educ.api.program.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import ca.bc.gov.educ.api.program.model.dto.*;
+import ca.bc.gov.educ.api.program.model.entity.*;
+import ca.bc.gov.educ.api.program.repository.*;
+import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
+import ca.bc.gov.educ.api.program.util.GradValidation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,30 +16,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
-import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
-import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
-import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
-import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
-import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
-import ca.bc.gov.educ.api.program.model.entity.CareerProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.GraduationProgramCodeEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementCodeEntity;
-import ca.bc.gov.educ.api.program.model.entity.OptionalProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementCodeEntity;
-import ca.bc.gov.educ.api.program.model.entity.ProgramRequirementEntity;
-import ca.bc.gov.educ.api.program.model.entity.RequirementTypeCodeEntity;
-import ca.bc.gov.educ.api.program.repository.CareerProgramRepository;
-import ca.bc.gov.educ.api.program.repository.GraduationProgramCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.OptionalProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementCodeRepository;
-import ca.bc.gov.educ.api.program.repository.ProgramRequirementRepository;
-import ca.bc.gov.educ.api.program.repository.RequirementTypeCodeRepository;
-import ca.bc.gov.educ.api.program.util.GradBusinessRuleException;
-import ca.bc.gov.educ.api.program.util.GradValidation;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 @RunWith(SpringRunner.class)
@@ -53,38 +34,18 @@ import ca.bc.gov.educ.api.program.util.GradValidation;
 @ActiveProfiles("test")
 public class ProgramServiceTest {
 
-	@Autowired
-	private ProgramService programService;
+	@Autowired ProgramService programService;
 	
-	@MockBean
-	private GraduationProgramCodeRepository graduationProgramCodeRepository;
-	
-	@MockBean
-	private ProgramRequirementRepository programRequirementRepository;
-	
-	@MockBean
-	private OptionalProgramRequirementRepository optionalProgramRequirementRepository;
-	
-	@MockBean
-	private OptionalProgramRepository optionalProgramRepository;
-	
-	@MockBean
-    private ProgramRequirementCodeRepository programRequirementCodeRepository; 
-    
-	@MockBean
-    private OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository;
-
-	@MockBean
-	private CareerProgramRepository gradCareerProgramRepository;
-	
-	@MockBean
-	private RequirementTypeCodeRepository requirementTypeCodeRepository;
-	
-	@Autowired
-	GradValidation validation;
-	
-	@Mock
-	WebClient webClient;
+	@MockBean GraduationProgramCodeRepository graduationProgramCodeRepository;
+	@MockBean ProgramRequirementRepository programRequirementRepository;
+	@MockBean OptionalProgramRequirementRepository optionalProgramRequirementRepository;
+	@MockBean OptionalProgramRepository optionalProgramRepository;
+	@MockBean ProgramRequirementCodeRepository programRequirementCodeRepository;
+	@MockBean OptionalProgramRequirementCodeRepository optionalProgramRequirementCodeRepository;
+	@MockBean CareerProgramRepository gradCareerProgramRepository;
+	@MockBean RequirementTypeCodeRepository requirementTypeCodeRepository;
+	@Autowired GradValidation validation;
+	@Mock WebClient webClient;
 	
 	@Test
 	public void testGetAllProgramList() {
@@ -98,7 +59,8 @@ public class ProgramServiceTest {
 		obj.setProgramName("1950 Graduation Program");
 		gradProgramList.add(obj);
 		Mockito.when(graduationProgramCodeRepository.findAll()).thenReturn(gradProgramList);
-		programService.getAllProgramList();
+		List<GraduationProgramCode> res = programService.getAllProgramList();
+		assertThat(res).isNotNull().hasSize(2);
 	}
 	
 	@Test
@@ -112,8 +74,8 @@ public class ProgramServiceTest {
 		objEntity.setProgramName("1950 Graduation Program");
 		Optional<GraduationProgramCodeEntity> ent = Optional.of(objEntity);
 		Mockito.when(graduationProgramCodeRepository.findById(programCode)).thenReturn(ent);
-		programService.getSpecificProgram(programCode);
-		Mockito.verify(graduationProgramCodeRepository).findById(programCode);
+		GraduationProgramCode res = programService.getSpecificProgram(programCode);
+		assertThat(res).isNotNull();
 	}
 	
 	@Test
@@ -153,7 +115,7 @@ public class ProgramServiceTest {
 		gradOptionalProgramRule.add(optionalRuleObj);
 		optionalRuleObj = new OptionalProgramRequirementEntity();
 		OptionalProgramEntity opE2 = new OptionalProgramEntity();
-		opE2.setOptionalProgramID(new UUID(1, 1));;
+		opE2.setOptionalProgramID(new UUID(1, 1));
 		optionalRuleObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity code4 = new OptionalProgramRequirementCodeEntity();
 		code4.setOptProReqCode("100");
@@ -206,7 +168,7 @@ public class ProgramServiceTest {
 		gradOptionalProgramRule.add(optionalRuleObj);
 		optionalRuleObj = new OptionalProgramRequirementEntity();
 		OptionalProgramEntity opE2 = new OptionalProgramEntity();
-		opE2.setOptionalProgramID(new UUID(1, 1));;
+		opE2.setOptionalProgramID(new UUID(1, 1));
 		optionalRuleObj.setOptionalProgramID(opE2);
 		OptionalProgramRequirementCodeEntity code4 = new OptionalProgramRequirementCodeEntity();
 		code4.setOptProReqCode("100");
@@ -278,7 +240,8 @@ public class ProgramServiceTest {
 		}
 		Mockito.when(graduationProgramCodeRepository.findById(gradProgram.getProgramCode())).thenReturn(Optional.empty());
 		Mockito.when(graduationProgramCodeRepository.save(graduationProgramCodeEntity)).thenReturn(graduationProgramCodeEntity);
-		programService.createGradProgram(gradProgram);
+		GraduationProgramCode res = programService.createGradProgram(gradProgram);
+		assertThat(res).isNotNull();
 		
 	}
 	
@@ -297,7 +260,8 @@ public class ProgramServiceTest {
 		Optional<GraduationProgramCodeEntity> ent = Optional.of(graduationProgramCodeEntity);
 		Mockito.when(graduationProgramCodeRepository.findById(gradProgram.getProgramCode())).thenReturn(ent);
 		Mockito.when(graduationProgramCodeRepository.save(graduationProgramCodeEntity)).thenReturn(toBeSaved);
-		programService.updateGradProgram(gradProgram);
+		GraduationProgramCode res = programService.updateGradProgram(gradProgram);
+		assertThat(res).isNotNull();
 		
 	}
 	
@@ -339,7 +303,8 @@ public class ProgramServiceTest {
 		graduationProgramCodeEntity.setProgramName("EFGH");
 		Mockito.when(graduationProgramCodeRepository.findIfChildRecordsExists(programCode)).thenReturn(Optional.empty());
 		Mockito.when(graduationProgramCodeRepository.findIfOptionalProgramsExists(programCode)).thenReturn(Optional.empty());
-		programService.deleteGradPrograms(programCode);
+		int count = programService.deleteGradPrograms(programCode);
+		assertThat(count).isEqualTo(1);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
@@ -363,7 +328,9 @@ public class ProgramServiceTest {
 		gradProgramRulesEntity.setProgramRequirementCode(code);
 		gradProgramRulesEntity.setGraduationProgramCode("2018-EN");
 		Mockito.when(programRequirementRepository.findById(ruleID)).thenReturn(Optional.of(gradProgramRulesEntity));
-		programService.deleteGradProgramRules(ruleID);
+		int count = programService.deleteGradProgramRules(ruleID);
+		assertThat(count).isEqualTo(1);
+
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
@@ -408,7 +375,8 @@ public class ProgramServiceTest {
 		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.empty());
 		Mockito.when(optionalProgramRepository.save(gradOptionalProgramEntity)).thenReturn(gradOptionalProgramEntity);
-		programService.createGradOptionalProgram(gradOptionalProgram);
+		OptionalProgram res = programService.createGradOptionalProgram(gradOptionalProgram);
+		assertThat(res).isNotNull();
 		
 	}
 	
@@ -434,7 +402,8 @@ public class ProgramServiceTest {
 		Mockito.when(optionalProgramRepository.findById(gradOptionalProgram.getOptionalProgramID())).thenReturn(ent);
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(gradOptionalProgram.getGraduationProgramCode(),gradOptionalProgram.getOptProgramCode())).thenReturn(Optional.empty());
 		Mockito.when(optionalProgramRepository.save(gradOptionalProgramEntity)).thenReturn(toBeSaved);
-		programService.updateGradOptionalPrograms(gradOptionalProgram);
+		OptionalProgram res = programService.updateGradOptionalPrograms(gradOptionalProgram);
+		assertThat(res).isNotNull();
 		
 	}
 	
@@ -503,7 +472,8 @@ public class ProgramServiceTest {
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradOptionalProgramEntity));
 		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradOptionalProgramEntity.getOptionalProgramID())).thenReturn(gradProgramRuleList);
 		
-		programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode, optionalProgramCode);
+		List<OptionalProgramRequirement> res = programService.getOptionalProgramRulesByProgramCodeAndOptionalProgramCode(programCode, optionalProgramCode);
+		assertThat(res).isNotNull().hasSize(2);
 	}
 	
 	
@@ -526,7 +496,8 @@ public class ProgramServiceTest {
 		gradOptionalProgramEntity.setOptProgramCode("FI");
 		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
 		Mockito.when(optionalProgramRepository.findById(ruleID)).thenReturn(Optional.of(gradOptionalProgramEntity));
-		programService.deleteGradOptionalPrograms(ruleID);
+		int count = programService.deleteGradOptionalPrograms(ruleID);
+		assertThat(count).isEqualTo(1);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
@@ -546,28 +517,31 @@ public class ProgramServiceTest {
 	public void testGetAllOptionalProgramList() {
 		List<OptionalProgramEntity> gradProgramList = new ArrayList<>();
 		OptionalProgramEntity obj = new OptionalProgramEntity();
-		obj.setOptionalProgramID(new UUID(1, 1));;
+		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");
 		gradProgramList.add(obj);
 		obj = new OptionalProgramEntity();
-		obj.setOptionalProgramID(new UUID(1, 1));;
+		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");
 		gradProgramList.add(obj);
 		Mockito.when(optionalProgramRepository.findAll()).thenReturn(gradProgramList);
-		programService.getAllOptionalProgramList();
+		List<OptionalProgram> res = programService.getAllOptionalProgramList();
+		assertThat(res).isNotNull().hasSize(2);
+
 	}
 	
 	@Test
 	public void testGetOptionalProgramByID() {
 		UUID optionalProgramID = new UUID(1, 1);
 		OptionalProgramEntity obj = new OptionalProgramEntity();
-		obj.setOptionalProgramID(new UUID(1, 1));;
+		obj.setOptionalProgramID(new UUID(1, 1));
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");
 		Mockito.when(optionalProgramRepository.findById(optionalProgramID)).thenReturn(Optional.of(obj));
-		programService.getOptionalProgramByID(optionalProgramID);
+		OptionalProgram opt = programService.getOptionalProgramByID(optionalProgramID);
+		assertThat(opt).isNotNull();
 	}	
 	
 	@Test
@@ -580,7 +554,8 @@ public class ProgramServiceTest {
 		obj.setOptionalProgramName("2018 Graduation Program");
 		obj.setOptProgramCode("FI");        
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(obj));
-		programService.getOptionalProgram(programCode, optionalProgramCode);
+		OptionalProgram res = programService.getOptionalProgram(programCode, optionalProgramCode);
+		assertThat(res).isNotNull();
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
@@ -602,7 +577,8 @@ public class ProgramServiceTest {
 		opE.setOptionalProgramID(new UUID(1, 1));
 		gradOptionalProgramRulesEntity.setOptionalProgramID(opE);
 		Mockito.when(optionalProgramRequirementRepository.findById(ruleID)).thenReturn(Optional.of(gradOptionalProgramRulesEntity));
-		programService.deleteGradOptionalProgramRules(ruleID);
+		int count = programService.deleteGradOptionalProgramRules(ruleID);
+		assertThat(count).isEqualTo(1);
 	}
 	
 	@Test(expected = GradBusinessRuleException.class)
@@ -624,7 +600,8 @@ public class ProgramServiceTest {
 		obj.setDescription("2018 Graduation Program");
 		gradProgramList.add(obj);
 		Mockito.when(programRequirementCodeRepository.findAll()).thenReturn(gradProgramList);
-		programService.getAllProgramRequirementCodeList();
+		List<ProgramRequirementCode> res = programService.getAllProgramRequirementCodeList();
+		assertThat(res).isNotNull();
 	}
 	
 	@Test
@@ -639,7 +616,8 @@ public class ProgramServiceTest {
 		obj.setDescription("2018 Graduation Program");
 		gradProgramList.add(obj);
 		Mockito.when(optionalProgramRequirementCodeRepository.findAll()).thenReturn(gradProgramList);
-		programService.getAllOptionalProgramRequirementCodeList();
+		List<OptionalProgramRequirementCode> opt = programService.getAllOptionalProgramRequirementCodeList();
+		assertThat(opt).isNotNull();
 	}
 	
 	@Test
@@ -654,7 +632,8 @@ public class ProgramServiceTest {
 		obj.setDescription("Business Education");
 		gradCareerProgramList.add(obj);
 		Mockito.when(gradCareerProgramRepository.findAll()).thenReturn(gradCareerProgramList);
-		programService.getAllCareerProgramCodeList();
+		List<CareerProgram> opt = programService.getAllCareerProgramCodeList();
+		assertThat(opt).isNotNull();
 	}
 	
 	@Test
@@ -663,20 +642,21 @@ public class ProgramServiceTest {
 		CareerProgram obj = new CareerProgram();
 		obj.setCode("AY");
 		obj.setDescription("Archaeology");
-		obj.toString();
 		CareerProgramEntity objEntity = new CareerProgramEntity();
 		objEntity.setCode("AY");
 		objEntity.setDescription("Archaeology");
 		Optional<CareerProgramEntity> ent = Optional.of(objEntity);
 		Mockito.when(gradCareerProgramRepository.findById(cpcCode)).thenReturn(ent);
-		programService.getSpecificCareerProgramCode(cpcCode);
+		CareerProgram opt = programService.getSpecificCareerProgramCode(cpcCode);
+		assertThat(opt).isNotNull();
 	}
 	
 	@Test
 	public void testGetSpecificCareerProgramCodeReturnsNull() {
 		String cpcCode = "AZ";
 		Mockito.when(gradCareerProgramRepository.findById(cpcCode)).thenReturn(Optional.empty());
-		programService.getSpecificCareerProgramCode(cpcCode);
+		CareerProgram opt = programService.getSpecificCareerProgramCode(cpcCode);
+		assertThat(opt).isNull();
 	}
 	
 	@Test
@@ -744,7 +724,6 @@ public class ProgramServiceTest {
 		obj.setUpdateUser("GRADUATION");
 		obj.setCreateDate(new Date(System.currentTimeMillis()));
 		obj.setUpdateDate(new Date(System.currentTimeMillis()));
-		obj.toString();
 		RequirementTypeCodeEntity objEntity = new RequirementTypeCodeEntity();
 		objEntity.setReqTypeCode("DC");
 		objEntity.setDescription("Data Correction by School");
@@ -754,7 +733,8 @@ public class ProgramServiceTest {
 		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
 		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(Optional.empty());
 		Mockito.when(requirementTypeCodeRepository.save(objEntity)).thenReturn(objEntity);
-		programService.createRequirementTypeCode(obj);
+		RequirementTypeCode opt = programService.createRequirementTypeCode(obj);
+		assertThat(opt).isNotNull();
 		
 	}
 	
@@ -799,7 +779,8 @@ public class ProgramServiceTest {
 		Optional<RequirementTypeCodeEntity> ent = Optional.of(objEntity);
 		Mockito.when(requirementTypeCodeRepository.findById(obj.getReqTypeCode())).thenReturn(ent);
 		Mockito.when(requirementTypeCodeRepository.save(objEntity)).thenReturn(objEntity);
-		programService.updateRequirementTypeCode(obj);
+		RequirementTypeCode opt = programService.updateRequirementTypeCode(obj);
+		assertThat(opt).isNotNull();
 		
 	}
 	
@@ -840,7 +821,8 @@ public class ProgramServiceTest {
 		obj.setDescription("MINCREDITS");
 		requirementTypeCodeList.add(obj);
 		Mockito.when(requirementTypeCodeRepository.findAll()).thenReturn(requirementTypeCodeList);
-		programService.getAllRequirementTypeCodeList();
+		List<RequirementTypeCode> opt = programService.getAllRequirementTypeCodeList();
+		assertThat(opt).isNotNull().hasSize(2);
 	}
 	
 	@Test
@@ -863,14 +845,45 @@ public class ProgramServiceTest {
 		objEntity.setUpdateDate(new Date(System.currentTimeMillis()));
 		Optional<RequirementTypeCodeEntity> ent = Optional.of(objEntity);
 		Mockito.when(requirementTypeCodeRepository.findById(reqType)).thenReturn(ent);
-		programService.getSpecificRequirementTypeCode(reqType);
+		RequirementTypeCode opt = programService.getSpecificRequirementTypeCode(reqType);
+		assertThat(opt).isNotNull();
 	}
 	
 	@Test
 	public void testGetSpecificRequirementTypesCodeReturnsNull() {
 		String reqType = "E";
 		Mockito.when(requirementTypeCodeRepository.findById(reqType)).thenReturn(Optional.empty());
-		programService.getSpecificRequirementTypeCode(reqType);
+		RequirementTypeCode opt = programService.getSpecificRequirementTypeCode(reqType);
+		assertThat(opt).isNull();
+	}
+
+	@Test
+	public void testgetAllAlgorithmDataList() {
+		List<GraduationProgramCodeEntity> gradProgramList = new ArrayList<>();
+		GraduationProgramCodeEntity obj = new GraduationProgramCodeEntity();
+		obj.setProgramCode("2018-EN");
+		obj.setProgramName("2018 Graduation Program");
+		gradProgramList.add(obj);
+
+		OptionalProgramEntity opent = new OptionalProgramEntity();
+		opent.setOptionalProgramID(UUID.randomUUID());
+		opent.setGraduationProgramCode("2018-EN");
+		opent.setOptProgramCode("FI");
+
+		List<ProgramRequirementEntity> gradProgramRule = new ArrayList<ProgramRequirementEntity>();
+		ProgramRequirementEntity ruleObj = new ProgramRequirementEntity();
+		ruleObj.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity code = new ProgramRequirementCodeEntity();
+		code.setProReqCode("100");
+		ruleObj.setProgramRequirementCode(code);
+
+		Mockito.when(graduationProgramCodeRepository.findAll()).thenReturn(gradProgramList);
+		Mockito.when(graduationProgramCodeRepository.findById("2018-EN")).thenReturn(Optional.of(obj));
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCode("2018-EN")).thenReturn(List.of(opent));
+		Mockito.when(programRequirementRepository.findByGraduationProgramCode("2018-EN")).thenReturn(gradProgramRule);
+		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode("2018-EN", "FI")).thenReturn(Optional.of(opent));
+		List<GradProgramAlgorithmData> res = programService.getAllAlgorithmDataList();
+		assertThat(res).isNotNull().hasSize(2);
 	}
 	
 }

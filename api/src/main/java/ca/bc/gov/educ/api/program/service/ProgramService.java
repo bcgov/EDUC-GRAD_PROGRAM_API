@@ -1,19 +1,11 @@
 package ca.bc.gov.educ.api.program.service;
 
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.validation.Valid;
-
+import ca.bc.gov.educ.api.program.model.dto.*;
 import ca.bc.gov.educ.api.program.model.entity.*;
+import ca.bc.gov.educ.api.program.model.transformer.*;
 import ca.bc.gov.educ.api.program.repository.*;
+import ca.bc.gov.educ.api.program.util.GradValidation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,27 +13,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import ca.bc.gov.educ.api.program.model.dto.CareerProgram;
-import ca.bc.gov.educ.api.program.model.dto.GradProgramAlgorithmData;
-import ca.bc.gov.educ.api.program.model.dto.GradRuleDetails;
-import ca.bc.gov.educ.api.program.model.dto.GraduationProgramCode;
-import ca.bc.gov.educ.api.program.model.dto.OptionalProgram;
-import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirement;
-import ca.bc.gov.educ.api.program.model.dto.OptionalProgramRequirementCode;
-import ca.bc.gov.educ.api.program.model.dto.ProgramRequirement;
-import ca.bc.gov.educ.api.program.model.dto.ProgramRequirementCode;
-import ca.bc.gov.educ.api.program.model.dto.RequirementTypeCode;
-import ca.bc.gov.educ.api.program.model.transformer.CareerProgramTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.GraduationProgramCodeTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementCodeTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramRequirementTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.OptionalProgramTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementCodeTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.ProgramRequirementTransformer;
-import ca.bc.gov.educ.api.program.model.transformer.RequirementTypeCodeTransformer;
-import ca.bc.gov.educ.api.program.util.GradValidation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.Valid;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class ProgramService {
@@ -243,7 +220,8 @@ public class ProgramService {
 			validation.addErrorAndStop(String.format(errorStringRuleCodeProgramCodeAssociated,gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode()));
 			return gradProgramRule;			
 		}else {
-			toBeSavedObject.setProgramRequirementCode(programRequirementCodeRepository.getOne(gradProgramRule.getProgramRequirementCode().getProReqCode()));
+			Optional<ProgramRequirementCodeEntity> opt = programRequirementCodeRepository.findById(gradProgramRule.getProgramRequirementCode().getProReqCode());
+			opt.ifPresent(toBeSavedObject::setProgramRequirementCode);
 			return programRequirementTransformer.transformToDTO(programRequirementRepository.save(toBeSavedObject));					
 		}
 	}
@@ -262,7 +240,8 @@ public class ProgramService {
 				}
 			}
 			BeanUtils.copyProperties(sourceObject,gradRuleEnity,CREATE_USER,CREATE_DATE);
-			gradRuleEnity.setProgramRequirementCode(programRequirementCodeRepository.getOne(gradRuleEnity.getProgramRequirementCode().getProReqCode()));
+			Optional<ProgramRequirementCodeEntity> opt = programRequirementCodeRepository.findById(gradProgramRule.getProgramRequirementCode().getProReqCode());
+			opt.ifPresent(gradRuleEnity::setProgramRequirementCode);
 			return programRequirementTransformer.transformToDTO(programRequirementRepository.save(gradRuleEnity));
 		}else {
 			validation.addErrorAndStop("Unique Identifier not found. Update Failed");
@@ -298,11 +277,8 @@ public class ProgramService {
 
 	@Transactional(readOnly = true)
 	public GraduationProgramCode getSpecificProgram(String programCode) {
-		Optional<GraduationProgramCodeEntity> gradResponse = graduationProgramCodeRepository.findById(programCode); 
-		if(gradResponse.isPresent()) {
-			return graduationProgramCodeTransformer.transformToDTO(gradResponse.get());
-		}
-		return null;
+		Optional<GraduationProgramCodeEntity> gradResponse = graduationProgramCodeRepository.findById(programCode);
+		return gradResponse.map(graduationProgramCodeEntity -> graduationProgramCodeTransformer.transformToDTO(graduationProgramCodeEntity)).orElse(null);
 	}
 
 	@Transactional
@@ -365,12 +341,13 @@ public class ProgramService {
 		OptionalProgramRequirementEntity toBeSavedObject = optionalProgramRequirementTransformer.transformToEntity(optionalProgramRequirement);
 		UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
 		if(existingObjectCheck != null) {
-			OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
-			validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
+			Optional<OptionalProgramEntity> optional = optionalProgramRepository.findById(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
+			optional.ifPresent(optionalProgramEntity -> validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.", optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(), optionalProgramEntity.getOptProgramCode(), optionalProgramEntity.getGraduationProgramCode())));
 			return optionalProgramRequirement;			
 		}else {
-			toBeSavedObject.setOptionalProgramRequirementCode(optionalProgramRequirementCodeRepository.getOne(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode()));
-			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(toBeSavedObject));	
+			Optional<OptionalProgramRequirementCodeEntity> opt = optionalProgramRequirementCodeRepository.findById(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode());
+			opt.ifPresent(toBeSavedObject::setOptionalProgramRequirementCode);
+			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(toBeSavedObject));
 		}
 	}
 
@@ -383,13 +360,14 @@ public class ProgramService {
 			if(checkIfOptionalRuleCodeChanged(gradRuleEnity,sourceObject)) {				
 				UUID existingObjectCheck = optionalProgramRequirementRepository.findIdByRuleCode(sourceObject.getOptionalProgramRequirementCode().getOptProReqCode(), sourceObject.getOptionalProgramID().getOptionalProgramID());
 				if(existingObjectCheck != null) {
-					OptionalProgramEntity optional = optionalProgramRepository.getOne(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
-					validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.",optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(),optional.getOptProgramCode(),optional.getGraduationProgramCode()));
+					Optional<OptionalProgramEntity> optional = optionalProgramRepository.findById(optionalProgramRequirement.getOptionalProgramID().getOptionalProgramID());
+					optional.ifPresent(optionalProgramEntity -> validation.addErrorAndStop(String.format("This Rule Code [%s] is already associated to a Optional Program Code [%s] and Program Code [%s] combination.", optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode(), optionalProgramEntity.getOptProgramCode(), optionalProgramEntity.getGraduationProgramCode())));
 					return optionalProgramRequirement;			
 				}
 			}
 			BeanUtils.copyProperties(sourceObject,gradRuleEnity,CREATE_USER,CREATE_DATE);
-			gradRuleEnity.setOptionalProgramRequirementCode(optionalProgramRequirementCodeRepository.getOne(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode()));
+			Optional<OptionalProgramRequirementCodeEntity> opt = optionalProgramRequirementCodeRepository.findById(optionalProgramRequirement.getOptionalProgramRequirementCode().getOptProReqCode());
+			opt.ifPresent(gradRuleEnity::setOptionalProgramRequirementCode);
 			return optionalProgramRequirementTransformer.transformToDTO(optionalProgramRequirementRepository.save(gradRuleEnity));			
 		}else {
 			validation.addErrorAndStop("Unique Identifier not found. Update Failed");
@@ -415,9 +393,7 @@ public class ProgramService {
 		opList.forEach(op-> {
 			if(op.getOptProgramCode() != null) {
 				Optional<OptionalProgramCodeEntity> ent = optionalProgramCodeRepository.findById(op.getOptProgramCode());
-				if(ent.isPresent()) {
-					op.setAssociatedCredential(ent.get().getAssociatedCredential());
-				}
+				ent.ifPresent(optionalProgramCodeEntity -> op.setAssociatedCredential(optionalProgramCodeEntity.getAssociatedCredential()));
 			}
 		});
 		return opList;
@@ -444,7 +420,7 @@ public class ProgramService {
 	public List<ProgramRequirement> getAllProgramRulesList() {
 		List<ProgramRequirement> programRuleList  = programRequirementTransformer.transformToDTO(programRequirementRepository.findAll());   
     	if(!programRuleList.isEmpty()) {
-	    	Collections.sort(programRuleList, Comparator.comparing(ProgramRequirement::getGraduationProgramCode)); 
+	    	programRuleList.sort(Comparator.comparing(ProgramRequirement::getGraduationProgramCode));
     	}
         return programRuleList;
 	}
@@ -485,6 +461,7 @@ public class ProgramService {
 		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
 		GraduationProgramCode code = getSpecificProgram(programCode);
 		data.setGradProgram(code);
+		data.setProgramKey(programCode+" "+optionalProgramCode);
 		List<ProgramRequirement> programRules = getAllProgramRuleList(programCode);
 		data.setProgramRules(programRules);
 		if(StringUtils.isNotBlank(optionalProgramCode)) {
@@ -495,9 +472,23 @@ public class ProgramService {
 	}
 
 	@Transactional(readOnly = true)
+	public List<GradProgramAlgorithmData> getAllAlgorithmDataList() {
+		List<GradProgramAlgorithmData> pList = new ArrayList<>();
+		List<GraduationProgramCode> pgmList = getAllProgramList();
+		pgmList.forEach(p-> {
+			pList.add(getAllAlgorithmData(p.getProgramCode(),""));
+			List<OptionalProgram> opList = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findByGraduationProgramCode(p.getProgramCode()));
+			opList.forEach(op-> pList.add(getAllAlgorithmData(p.getProgramCode(),op.getOptProgramCode())));
+		});
+
+		return pList;
+	}
+
+
+	@Transactional(readOnly = true)
 	public List<CareerProgram> getAllCareerProgramCodeList() {
 		List<CareerProgram> gradCareerProgramList = gradCareerProgramTransformer.transformToDTO(gradCareerProgramRepository.findAll());
-		Collections.sort(gradCareerProgramList, Comparator.comparing(CareerProgram::getCode));
+		gradCareerProgramList.sort(Comparator.comparing(CareerProgram::getCode));
 		return gradCareerProgramList;
 	}
 
@@ -522,11 +513,7 @@ public class ProgramService {
 	public RequirementTypeCode getSpecificRequirementTypeCode(String typeCode) {
 		Optional<RequirementTypeCodeEntity> entity = requirementTypeCodeRepository
 				.findById(StringUtils.toRootUpperCase(typeCode));
-		if (entity.isPresent()) {
-			return requirementTypeCodeTransformer.transformToDTO(entity.get());
-		} else {
-			return null;
-		}
+		return entity.map(requirementTypeCodeEntity -> requirementTypeCodeTransformer.transformToDTO(requirementTypeCodeEntity)).orElse(null);
 	}
 
 	@Transactional
@@ -557,7 +544,7 @@ public class ProgramService {
 
 	@Transactional
 	public int deleteRequirementTypeCode(@Valid String programType) {
-		Boolean isPresent = getRequirementByRequirementType(programType);
+		boolean isPresent = getRequirementByRequirementType(programType);
 		if(isPresent) {
 			validation.addErrorAndStop(
 					String.format("This Requirement Type [%s] cannot be deleted as some rules are of this type.",programType));
