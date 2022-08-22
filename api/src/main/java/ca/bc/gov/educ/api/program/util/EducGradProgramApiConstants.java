@@ -45,6 +45,7 @@ public class EducGradProgramApiConstants {
     public static final String GET_ALL_SPECIFIC_PROGRAM_RULES_BY_TRAX_SEQ_NUMBER = "/programrules/by-trax/{traxReqNumber}";
     
     public static final String GET_DATA_FOR_ALGORITHM_MAPPING = "/algorithmdata";
+    public static final String GET_DATA_FOR_ALGORITHM_LIST_MAPPING = "/algorithmdatalist";
     
     public static final String GET_ALL_GRAD_CAREER_PROGRAM_MAPPING = "/careerprogram";
     public static final String GET_ALL_GRAD_CAREER_PROGRAM_BY_CODE_MAPPING = "/careerprogram/{cpCode}";

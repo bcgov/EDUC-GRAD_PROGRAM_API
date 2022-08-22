@@ -1,5 +1,6 @@
 package ca.bc.gov.educ.api.program.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -129,12 +130,18 @@ public class WebClientTest {
 		gradProgramRule.setProgramRequirementCode(code);
 		ProgramRequirementEntity ruleEntity = new ProgramRequirementEntity();
     	ruleEntity.setProgramRequirementID(new UUID(1,1));
-		ruleEntity.setGraduationProgramCode("2018-EN"); 
-		ruleEntity.setProgramRequirementCode(programRequirementCodeRepository.getOne(gradProgramRule.getProgramRequirementCode().getProReqCode()));
+		ruleEntity.setGraduationProgramCode("2018-EN");
+		ProgramRequirementCodeEntity codeEntity = new ProgramRequirementCodeEntity();
+		codeEntity.setProReqCode("100");
+
+		ruleEntity.setProgramRequirementCode(codeEntity);
         
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(null);
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.createGradProgramRules(gradProgramRule);
+		Mockito.when(programRequirementCodeRepository.findById(gradProgramRule.getProgramRequirementCode().getProReqCode())).thenReturn(Optional.of(codeEntity));
+
+		ProgramRequirement res = programService.createGradProgramRules(gradProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test
@@ -154,7 +161,8 @@ public class WebClientTest {
         Mockito.when(programRequirementRepository.findById(gradProgramRule.getProgramRequirementID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(null);
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.updateGradProgramRules(gradProgramRule);
+    	ProgramRequirement res = programService.updateGradProgramRules(gradProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test(expected = GradBusinessRuleException.class)
@@ -174,7 +182,8 @@ public class WebClientTest {
         Mockito.when(programRequirementRepository.findById(gradProgramRule.getProgramRequirementID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(programRequirementRepository.findIdByRuleCode(gradProgramRule.getProgramRequirementCode().getProReqCode(),gradProgramRule.getGraduationProgramCode())).thenReturn(new UUID(1, 1));
     	Mockito.when(programRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.updateGradProgramRules(gradProgramRule);
+    	ProgramRequirement res = programService.updateGradProgramRules(gradProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test(expected = GradBusinessRuleException.class)
@@ -233,7 +242,7 @@ public class WebClientTest {
 		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
 		gradOptionalProgramEntity.setOptProgramCode("FI");
 		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
-		Mockito.when(optionalProgramRepository.getOne(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(gradOptionalProgramEntity);
+		Mockito.when(optionalProgramRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.of(gradOptionalProgramEntity));
     	Mockito.when(optionalProgramRequirementRepository.findIdByRuleCode(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode(),gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(new UUID(1, 1));
     	programService.createGradOptionalProgramRules(gradOptionalProgramRule);
 	}
@@ -251,17 +260,22 @@ public class WebClientTest {
     	OptionalProgramEntity opE2 = new OptionalProgramEntity();
 		opE2.setOptionalProgramID(new UUID(1, 1));
 		ruleEntity.setOptionalProgramID(opE2);
-    	ruleEntity.setOptionalProgramRequirementCode(optionalProgramRequirementCodeRepository.getOne(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode()));
+
+		OptionalProgramRequirementCodeEntity codeEntity = new OptionalProgramRequirementCodeEntity();
+		codeEntity.setOptProReqCode("100");
+
+		ruleEntity.setOptionalProgramRequirementCode(codeEntity);
     	OptionalProgramEntity gradOptionalProgramEntity = new OptionalProgramEntity();
 		gradOptionalProgramEntity.setGraduationProgramCode("ABCD");
 		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
 		gradOptionalProgramEntity.setOptProgramCode("FI");
 		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
-		Mockito.when(optionalProgramRepository.getOne(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(gradOptionalProgramEntity);
-        
+		Mockito.when(optionalProgramRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.of(gradOptionalProgramEntity));
+        Mockito.when(optionalProgramRequirementCodeRepository.findById(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode())).thenReturn(Optional.of(codeEntity));
     	Mockito.when(optionalProgramRequirementRepository.findIdByRuleCode(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode(),gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(null);
     	Mockito.when(optionalProgramRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.createGradOptionalProgramRules(gradOptionalProgramRule);
+    	OptionalProgramRequirement res = programService.createGradOptionalProgramRules(gradOptionalProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test
@@ -284,7 +298,8 @@ public class WebClientTest {
         Mockito.when(optionalProgramRequirementRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(optionalProgramRequirementRepository.findIdByRuleCode(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode(),gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(null);
     	Mockito.when(optionalProgramRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+    	OptionalProgramRequirement res = programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test(expected = GradBusinessRuleException.class)
@@ -309,12 +324,13 @@ public class WebClientTest {
 		gradOptionalProgramEntity.setOptionalProgramID(new UUID(1, 1));
 		gradOptionalProgramEntity.setOptProgramCode("FI");
 		gradOptionalProgramEntity.setOptionalProgramName("EFGH");
-		Mockito.when(optionalProgramRepository.getOne(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(gradOptionalProgramEntity);
+		Mockito.when(optionalProgramRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.of(gradOptionalProgramEntity));
         
         Mockito.when(optionalProgramRequirementRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.of(ruleEntity));
     	Mockito.when(optionalProgramRequirementRepository.findIdByRuleCode(gradOptionalProgramRule.getOptionalProgramRequirementCode().getOptProReqCode(),gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(new UUID(1, 1));
     	Mockito.when(optionalProgramRequirementRepository.save(ruleEntity)).thenReturn(ruleEntity);
-    	programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+    	OptionalProgramRequirement res = programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test(expected = GradBusinessRuleException.class)
@@ -328,7 +344,8 @@ public class WebClientTest {
     	gradOptionalProgramRule.setOptionalProgramRequirementCode(code);
         
         Mockito.when(optionalProgramRequirementRepository.findById(gradOptionalProgramRule.getOptionalProgramID().getOptionalProgramID())).thenReturn(Optional.empty());    
-    	programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+    	OptionalProgramRequirement res = programService.updateGradOptionalProgramRules(gradOptionalProgramRule);
+		assertThat(res).isNotNull();
 	}
     
     @Test
@@ -364,13 +381,15 @@ public class WebClientTest {
 		ruleObj.setProgramRequirementCode(code2);
 		gradProgramRuleList.add(ruleObj);        
         Mockito.when(programRequirementRepository.findAll()).thenReturn(gradProgramRuleList);
-		programService.getAllProgramRulesList();
+		List<ProgramRequirement> res = programService.getAllProgramRulesList();
+		assertThat(res).isNotNull().hasSize(2);
     }
     
     @Test
     public void testGetAllProgramRulesList_emptyList() {
         Mockito.when(programRequirementRepository.findAll()).thenReturn(new ArrayList<>());
-		programService.getAllProgramRulesList();
+		List<ProgramRequirement> res= programService.getAllProgramRulesList();
+		assertThat(res).isNotNull().isEmpty();
     }
     
     
@@ -408,13 +427,15 @@ public class WebClientTest {
         
         Mockito.when(optionalProgramRequirementRepository.findAll()).thenReturn(gradProgramRuleList);
         Mockito.when(optionalProgramRepository.findById(new UUID(1, 1))).thenReturn(Optional.of(obj));
-		programService.getAllOptionalProgramRulesList();
+		List<OptionalProgramRequirement> res =programService.getAllOptionalProgramRulesList();
+		assertThat(res).isNotNull().hasSize(2);
     }
     
     @Test
     public void testGetAllOptionalProgramRulesList_emptyList() {
         Mockito.when(programRequirementRepository.findAll()).thenReturn(new ArrayList<>());
-		programService.getAllOptionalProgramRulesList();
+		List<OptionalProgramRequirement> res = programService.getAllOptionalProgramRulesList();
+		assertThat(res).isNotNull().isEmpty();
     }
     
     @Test
@@ -434,7 +455,8 @@ public class WebClientTest {
 		ruleObj.setProgramRequirementCode(code2);
 		gradProgramRuleList.add(ruleObj);
     	Mockito.when(programRequirementRepository.findByGraduationProgramCode(programCode)).thenReturn(gradProgramRuleList);
-    	programService.getAllProgramRuleList(programCode);
+    	List<ProgramRequirement> res = programService.getAllProgramRuleList(programCode);
+		assertThat(res).isNotNull().hasSize(2);
     }
     
     
