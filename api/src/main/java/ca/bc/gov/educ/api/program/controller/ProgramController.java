@@ -405,7 +405,7 @@ public class ProgramController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<GradProgramAlgorithmData> getAllAlgorithmData(@RequestParam(value = "programCode") String programCode,@RequestParam(value = "optionalProgramCode", required = false) String optionalProgramCode) {
     	logger.debug("getAllAlgorithmData : ");
-        return response.GET(programService.getAllAlgorithmData(programCode,optionalProgramCode));
+        return response.GET(programService.getAllAlgorithmData(programCode,optionalProgramCode,null));
     }
     
     @GetMapping(EducGradProgramApiConstants.GET_ALL_GRAD_CAREER_PROGRAM_MAPPING)

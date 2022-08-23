@@ -457,10 +457,11 @@ public class ProgramService {
 	}
 
 	@Transactional(readOnly = true)
-	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode) {
+	public GradProgramAlgorithmData getAllAlgorithmData(String programCode, String optionalProgramCode,UUID optionalProgramID) {
 		GradProgramAlgorithmData data = new GradProgramAlgorithmData();
 		GraduationProgramCode code = getSpecificProgram(programCode);
 		data.setGradProgram(code);
+		data.setOptionalProgramID(optionalProgramID);
 		data.setProgramKey(programCode+" "+optionalProgramCode);
 		List<ProgramRequirement> programRules = getAllProgramRuleList(programCode);
 		data.setProgramRules(programRules);
@@ -476,9 +477,9 @@ public class ProgramService {
 		List<GradProgramAlgorithmData> pList = new ArrayList<>();
 		List<GraduationProgramCode> pgmList = getAllProgramList();
 		pgmList.forEach(p-> {
-			pList.add(getAllAlgorithmData(p.getProgramCode(),""));
+			pList.add(getAllAlgorithmData(p.getProgramCode(),"",null));
 			List<OptionalProgram> opList = optionalProgramTransformer.transformToDTO(optionalProgramRepository.findByGraduationProgramCode(p.getProgramCode()));
-			opList.forEach(op-> pList.add(getAllAlgorithmData(p.getProgramCode(),op.getOptProgramCode())));
+			opList.forEach(op-> pList.add(getAllAlgorithmData(p.getProgramCode(),op.getOptProgramCode(),op.getOptionalProgramID())));
 		});
 
 		return pList;
