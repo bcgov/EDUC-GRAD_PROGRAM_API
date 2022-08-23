@@ -709,7 +709,7 @@ public class ProgramServiceTest {
 		Mockito.when(optionalProgramRepository.findByGraduationProgramCodeAndOptProgramCode(programCode, optionalProgramCode)).thenReturn(Optional.of(gradOptionalProgramEntity));
 		Mockito.when(optionalProgramRequirementRepository.findByOptionalProgramID(gradOptionalProgramEntity.getOptionalProgramID())).thenReturn(gradOptionalProgramRuleList);
 		
-		GradProgramAlgorithmData data = programService.getAllAlgorithmData(programCode, optionalProgramCode);
+		GradProgramAlgorithmData data = programService.getAllAlgorithmData(programCode, optionalProgramCode,new UUID(1, 1));
 		assertNotNull(data);
 		assertEquals(2, data.getOptionalProgramRules().size());
     	
