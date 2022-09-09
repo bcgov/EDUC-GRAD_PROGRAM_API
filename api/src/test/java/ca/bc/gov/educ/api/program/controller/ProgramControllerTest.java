@@ -572,9 +572,9 @@ public class ProgramControllerTest {
 		
 		data.setOptionalProgramRules(listOptional);
 		
-		Mockito.when(programService.getAllAlgorithmData(programCode,optionalProgramCode)).thenReturn(data);
+		Mockito.when(programService.getAllAlgorithmData(programCode,optionalProgramCode,null)).thenReturn(data);
 		programController.getAllAlgorithmData(programCode, optionalProgramCode);
-		Mockito.verify(programService).getAllAlgorithmData(programCode,optionalProgramCode);
+		Mockito.verify(programService).getAllAlgorithmData(programCode,optionalProgramCode,null);
 	}
 	
 	@Test
