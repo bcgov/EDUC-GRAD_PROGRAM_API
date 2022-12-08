@@ -1,0 +1,9 @@
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Language Arts 11', DESCRIPTION='Students must complete a 4-credit course from the Language Arts 11 subject area', NOT_MET_DESC='No Language Arts 11' WHERE PROGRAM_REQUIREMENT_CODE='740';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Language Arts 12', DESCRIPTION='Students must complete a 4-credit course from the Language Arts 12 subject area', NOT_MET_DESC='No Language Arts 12' WHERE PROGRAM_REQUIREMENT_CODE='741';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Social Studies 11', DESCRIPTION='Students must complete Social Studies 11', NOT_MET_DESC='No Social Studies 11' WHERE PROGRAM_REQUIREMENT_CODE='742';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Mathematics 11', DESCRIPTION='Students must complete a 4-credit course from the Mathematics 11 subject area', NOT_MET_DESC='No Mathematics 11' WHERE PROGRAM_REQUIREMENT_CODE='743';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Science 11', DESCRIPTION='Students must complete a 4-credit course from the Science 11  subject area', NOT_MET_DESC='No Science 11' WHERE PROGRAM_REQUIREMENT_CODE='744';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='Consumer Ed', DESCRIPTION='Students must complete a 4-credit course in Consumer Education', NOT_MET_DESC='No Consumer Ed. or Bus. Ed 10' WHERE PROGRAM_REQUIREMENT_CODE='745';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='13 Gr 11 or 12 4-credit courses', DESCRIPTION='Students must complete a minimum of thirteen 4-credit courses at the Grade 11 or 12 level', NOT_MET_DESC='Fewer than 13 Gr 11 or 12 courses' WHERE PROGRAM_REQUIREMENT_CODE='746';
+UPDATE PROGRAM_REQUIREMENT_CODE SET LABEL='3 Gr 12 4-credit courses', DESCRIPTION='Students must complete a minimum of three 4-credit courses at the Grade 12 level, in addition to English 12 or Communications 12', NOT_MET_DESC='Fewer than 3 Gr 12 courses' WHERE PROGRAM_REQUIREMENT_CODE='747';
+
