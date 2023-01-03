@@ -18,6 +18,5 @@ public class GraduationProgramCode extends BaseModel {
 	private Date effectiveDate;
 	private Date expiryDate;
 	private String associatedCredential;
-	private Date assessmentReleaseDate;
-			
+
 }
