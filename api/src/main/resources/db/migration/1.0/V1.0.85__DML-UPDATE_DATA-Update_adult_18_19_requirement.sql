@@ -8,9 +8,9 @@ INSERT INTO REQUIREMENT_TYPE_CODE (REQUIREMENT_TYPE_CODE, LABEL, DESCRIPTION, DI
 VALUES('MAC', 'Min Adult Courses', 'Algorithm identifies student courses taken after starting the program. Currently applies to the Adult Graduation Diploma Program only.', 60, TIMESTAMP '2021-08-12 00:00:00.000000');
 
 UPDATE PROGRAM_REQUIREMENT_CODE
-SET LABEL='3 Adult Courses', 
-	DESCRIPTION='Of the five courses required for the Adult Dogwood, at least three must be completed after the student has turned 18 or 19', 
-	NOT_MET_DESC='Fewer than 3 adult courses', 
+SET LABEL='3 Courses completed after starting the program',
+	DESCRIPTION='Students must complete three of five required courses after starting the program',
+	NOT_MET_DESC='Fewer than 3 eligible courses completed after starting the program',
 	REQUIREMENT_TYPE_CODE='MAC'
 WHERE PROGRAM_REQUIREMENT_CODE='504';
 
