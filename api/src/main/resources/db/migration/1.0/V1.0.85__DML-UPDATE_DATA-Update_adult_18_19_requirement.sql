@@ -5,7 +5,7 @@ DELETE FROM PROGRAM_REQUIREMENT_CODE WHERE PROGRAM_REQUIREMENT_CODE='507';
 DELETE FROM REQUIREMENT_TYPE_CODE WHERE REQUIREMENT_TYPE_CODE='MAC19';
 
 INSERT INTO REQUIREMENT_TYPE_CODE (REQUIREMENT_TYPE_CODE, LABEL, DESCRIPTION, DISPLAY_ORDER, EFFECTIVE_DATE) 
-VALUES('MAC', 'Min Adult Courses', 'Algorithm identifies student courses taken after Adult student turns 18 or 19. Currently applies to the Adult Graduation Diploma Program only.', 60, TIMESTAMP '2021-08-12 00:00:00.000000');
+VALUES('MAC', 'Min Adult Courses', 'Algorithm identifies student courses taken after starting the program. Currently applies to the Adult Graduation Diploma Program only.', 60, TIMESTAMP '2021-08-12 00:00:00.000000');
 
 UPDATE PROGRAM_REQUIREMENT_CODE
 SET LABEL='3 Adult Courses', 
