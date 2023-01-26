@@ -1,12 +1,12 @@
 UPDATE PROGRAM_REQUIREMENT_CODE
 SET LABEL='Language Arts 12',
-    DESCRIPTION='Students must complete a 4-credit course from Language Arts 12',
+    DESCRIPTION='Students must complete a 4-credit course from Language Arts 12 subject area',
     NOT_MET_DESC='No Language Arts 12'
 WHERE PROGRAM_REQUIREMENT_CODE='500';
 
 UPDATE PROGRAM_REQUIREMENT_CODE
 SET LABEL='Mathematics 11 or 12',
-    DESCRIPTION='Students must complete a 4-credit course from Mathematics 11 or 12',
+    DESCRIPTION='Students must complete a 4-credit course from Mathematics 11 or 12 subject area',
     NOT_MET_DESC='No Mathematics 11 or 12'
 WHERE PROGRAM_REQUIREMENT_CODE='501';
 
