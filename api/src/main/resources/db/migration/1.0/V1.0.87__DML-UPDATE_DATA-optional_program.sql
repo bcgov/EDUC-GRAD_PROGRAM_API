@@ -64,13 +64,13 @@ WHERE GRADUATION_PROGRAM_CODE = '2004-PF' AND OPTIONAL_PROGRAM_CODE = 'DD';
 UPDATE OPTIONAL_PROGRAM SET LABEL = 'English Dogwood', DESCRIPTION = 'Students enrolled in Programme francophone on the 1986 Diplôme de fin d''études secondaires en Colombie-Britannique program, who were also working towards the B.C. Certificate of Graduation (English Dogwood).'
 WHERE GRADUATION_PROGRAM_CODE = '1986-PF' AND OPTIONAL_PROGRAM_CODE = 'DD';
 
-UPDATE OPTIONAL_PROGRAM SET DESCRIPTION = 'Students enrolled in Programme francophone on the 2018 Diplôme de fin d''études secondaires en Colombie-Britannique program, who are also working towards the B.C. Certificate of Graduation (Dual Dogwood).'
+UPDATE OPTIONAL_PROGRAM SET DESCRIPTION = 'Students enrolled in Programme francophone on the 2018 Diplôme de fin d''études secondaires en Colombie-Britannique program, who are also working towards the B.C. Certificate of Graduation (English Dogwood).'
 WHERE GRADUATION_PROGRAM_CODE = '2018-PF' AND OPTIONAL_PROGRAM_CODE = 'DD';
 
 UPDATE OPTIONAL_PROGRAM SET LABEL = 'English Dogwood', DESCRIPTION = 'Students enrolled in Programme francophone on the 1996 Diplôme de fin d''études secondaires en Colombie-Britannique program, who were also working towards the B.C. Certificate of Graduation (English Dogwood).'
 WHERE GRADUATION_PROGRAM_CODE = '1996-PF' AND OPTIONAL_PROGRAM_CODE = 'DD';
 
-UPDATE OPTIONAL_PROGRAM SET EFFECTIVE_DATE = TIMESTAMP'2023-07-01 00:00:00.0', DESCRIPTION = 'Students enrolled in Programme francophone on the 2023 Diplôme de fin d''études secondaires en Colombie-Britannique program, who are also working towards the B.C. Certificate of Graduation (Dual Dogwood).'
+UPDATE OPTIONAL_PROGRAM SET EFFECTIVE_DATE = TIMESTAMP'2023-07-01 00:00:00.0', DESCRIPTION = 'Students enrolled in Programme francophone on the 2023 Diplôme de fin d''études secondaires en Colombie-Britannique program, who are also working towards the B.C. Certificate of Graduation (English Dogwood).'
 WHERE GRADUATION_PROGRAM_CODE = '2023-PF' AND OPTIONAL_PROGRAM_CODE = 'DD';
 
 UPDATE OPTIONAL_PROGRAM SET DESCRIPTION = 'French Immersion students on the 2018 B.C. Graduation program who are also working towards a Diplôme de fin d’études secondaires en Colombie-Britannique.'
