@@ -10,8 +10,6 @@ UPDATE PROGRAM_REQUIREMENT_CODE
 SET LABEL='Program Completion', DESCRIPTION='An SCCP student is completed when a program completion date has been reported by the school and the date is not in the future', NOT_MET_DESC='No Program Completion date or date is in the future'
 WHERE PROGRAM_REQUIREMENT_CODE='650';
 
-DELETE FROM PROGRAM_REQUIREMENT_CODE WHERE PROGRAM_REQUIREMENT_CODE='675';
-
 UPDATE PROGRAM_REQUIREMENT_CODE
 SET LABEL='10 Gr 12 elective credits', DESCRIPTION='Students must complete a minimum of ten of twenty-four elective credits at the Grade 12 level', NOT_MET_DESC='Fewer than 10 Gr 12 elective credits'
 WHERE PROGRAM_REQUIREMENT_CODE='720';
