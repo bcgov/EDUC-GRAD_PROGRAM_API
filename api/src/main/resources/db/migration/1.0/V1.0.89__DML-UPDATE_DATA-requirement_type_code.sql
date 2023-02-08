@@ -7,5 +7,3 @@ UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm identifies student cou
 UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm matches a specific course to those listed under a rule that restricts the number of work experience courses that can be used to meet a graduation requirement.' WHERE REQUIREMENT_TYPE_CODE='MWEX';
 UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm identifies if a program completion date exists for a student on the SCCP program.' WHERE REQUIREMENT_TYPE_CODE='PCD';
 UPDATE REQUIREMENT_TYPE_CODE SET DESCRIPTION = 'Algorithm checks if student on the 1950 program has been reported by the school as grade ''AD'' (student on the Adult Graduation Program who is expected to graduate).' WHERE REQUIREMENT_TYPE_CODE='SG';
-
-DELETE FROM REQUIREMENT_TYPE_CODE WHERE REQUIREMENT_TYPE_CODE = 'SR';
