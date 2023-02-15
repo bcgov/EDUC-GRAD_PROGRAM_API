@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
