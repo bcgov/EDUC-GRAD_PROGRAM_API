@@ -50,7 +50,8 @@ public class RestWebClient {
             .doOnNext((clientResponse -> LogHelper.logClientHttpReqResponseDetails(
                     clientRequest.method(),
                     clientRequest.url().toString(),
-                    clientResponse.rawStatusCode(),
+                    //GRAD2-1929 Refactoring/Linting replaced rawStatusCode() with statusCode() as it was deprecated.
+                    clientResponse.statusCode().value(),
                     clientRequest.headers().get(EducGradProgramApiConstants.CORRELATION_ID),
                     constants.isSplunkLogHelperEnabled())
             ));
