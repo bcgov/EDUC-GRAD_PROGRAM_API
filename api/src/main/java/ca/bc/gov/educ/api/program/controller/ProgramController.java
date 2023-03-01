@@ -118,7 +118,7 @@ public class ProgramController {
     @Operation(summary = "Update a Program", description = "Update a Program", tags = { "Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST.")})
     public ResponseEntity<ApiResponseModel<GraduationProgramCode>> updateGradPrograms(@Valid @RequestBody GraduationProgramCode gradProgram) { 
-    	logger.info("updateGradProgramsss : ");
+    	logger.debug("updateGradProgramsss : ");
     	validation.requiredField(gradProgram.getProgramCode(), PROGRAM_CODE);
       	validation.requiredField(gradProgram.getProgramName(), PROGRAM_NAME);
     	if(validation.hasErrors()) {
@@ -258,7 +258,7 @@ public class ProgramController {
     @Operation(summary = "Update Optional Program", description = "Update Optional Program", tags = { "Optional Programs" })
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK"), @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
     public ResponseEntity<ApiResponseModel<OptionalProgram>> updateGradOptionalPrograms(@Valid @RequestBody OptionalProgram optionalProgram) { 
-    	logger.info("updateGradOptionalPrograms : ");
+    	logger.debug("updateGradOptionalPrograms : ");
     	validation.requiredField(optionalProgram.getGraduationProgramCode(), PROGRAM_CODE);
        	validation.requiredField(optionalProgram.getOptProgramCode(), "Optional Program Code");
        	validation.requiredField(optionalProgram.getOptionalProgramName(), "Optional Program Name");
@@ -480,7 +480,7 @@ public class ProgramController {
             @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
     public ResponseEntity<ApiResponseModel<RequirementTypeCode>> updateRequirementTypeCode(
             @Valid @RequestBody RequirementTypeCode requirementTypeCode) {
-        logger.info("updateRequirementTypeCode : ");
+        logger.debug("updateRequirementTypeCode : ");
         validation.requiredField(requirementTypeCode.getReqTypeCode(), REQUIREMENT_TYPE_CODE);
         validation.requiredField(requirementTypeCode.getDescription(), "Requirement Type Description");
         if (validation.hasErrors()) {
