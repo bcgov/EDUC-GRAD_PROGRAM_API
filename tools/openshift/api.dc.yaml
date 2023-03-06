@@ -148,6 +148,13 @@ objects:
             target:
               averageUtilization: 400
               type: Utilization
+        #GRAD2-1947 Resource optmization
+        - type: Resource
+          resource:
+            name: memory
+            target:
+              averageUtilization: 850
+              type: Utilization
 parameters:
   - name: REPO_NAME
     description: Application repository name
