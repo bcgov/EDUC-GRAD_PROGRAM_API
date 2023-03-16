@@ -1,0 +1,1 @@
+INSERT INTO REQUIREMENT_TYPE_CODE (REQUIREMENT_TYPE_CODE,LABEL,DESCRIPTION,DISPLAY_ORDER,EFFECTIVE_DATE,EXPIRY_DATE) VALUES ('MI','Match Indigenous','Algorithm matches a specific course to those listed under the Indigenous graduation requirement subject area.',70,TIMESTAMP'2021-06-14 00:00:00.0',TIMESTAMP'2099-12-31 00:00:00.0');
