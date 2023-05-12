@@ -153,7 +153,7 @@ objects:
           resource:
             name: memory
             target:
-              averageUtilization: 850
+              averageUtilization: 500
               type: Utilization
 parameters:
   - name: REPO_NAME
