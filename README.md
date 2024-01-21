@@ -13,6 +13,10 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-GRAD-PROGRAM-API&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=bcgov_EDUC-GRAD-PROGRAM-API) &nbsp;
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=bcgov_EDUC-GRAD-PROGRAM-API&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=bcgov_EDUC-GRAD-PROGRAM-API) &nbsp;
 
-# EDUC-GRAD-PROGRAM-API &nbsp; ![GitHub repo size](https://img.shields.io/github/repo-size/bcgov/EDUC-GRAD-PROGRAM-API) ![GitHub Tag](https://img.shields.io/github/v/tag/bcgov/EDUC-GRAD-PROGRAM-API)
+# EDUC-GRAD-PROGRAM-API
 Manages the various programs and rules for GRAD team
 
+![GitHub repo size](https://img.shields.io/github/repo-size/bcgov/EDUC-GRAD-PROGRAM-API) &nbsp;
+![GitHub Tag](https://img.shields.io/github/v/tag/bcgov/EDUC-GRAD-PROGRAM-API) &nbsp;
+![GitHub commits difference between two branches/tags/commits](https://img.shields.io/github/commits-difference/bcgov/EDUC-GRAD-PROGRAM-API?base=main&head=grad-release&label=grad-release%20-%3E%20main) &nbsp;
+![GitHub commits difference between two branches/tags/commits](https://img.shields.io/github/commits-difference/bcgov/EDUC-GRAD-PROGRAM-API?base=grad-release&head=main&label=main%20-%3E%20grad-release) &nbsp;
