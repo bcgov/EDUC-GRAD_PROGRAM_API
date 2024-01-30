@@ -1,4 +1,3 @@
-set define off;
 insert into  CAREER_PROGRAM_CODE values('AA','Art Careers', 'Art Careers',10,TO_DATE(TRIM('     1992/09/01     '), 'YYYY/MM/DD'),TO_DATE(TRIM(''), 'YYYY/MM/DD'), USER, SYSDATE, USER, SYSDATE);
 insert into  CAREER_PROGRAM_CODE values('AB','Autobody', 'Autobody',10,TO_DATE(TRIM('     1983/09/01     '), 'YYYY/MM/DD'),TO_DATE(TRIM(' '), 'YYYY/MM/DD'), USER, SYSDATE, USER, SYSDATE);
 insert into  CAREER_PROGRAM_CODE values('AC','Agribusiness', 'Agribusiness',10,TO_DATE(TRIM('     1983/09/01     '), 'YYYY/MM/DD'),TO_DATE(TRIM('     1997/08/31'), 'YYYY/MM/DD'), USER, SYSDATE, USER, SYSDATE);
