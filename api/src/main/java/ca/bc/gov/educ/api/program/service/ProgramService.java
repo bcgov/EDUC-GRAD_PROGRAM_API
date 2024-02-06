@@ -6,6 +6,7 @@ import ca.bc.gov.educ.api.program.model.entity.*;
 import ca.bc.gov.educ.api.program.model.transformer.*;
 import ca.bc.gov.educ.api.program.repository.*;
 import ca.bc.gov.educ.api.program.util.GradValidation;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.Valid;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -495,8 +495,7 @@ public class ProgramService {
 
 	@Transactional(readOnly = true)
 	public CareerProgram getSpecificCareerProgramCode(String cpc) {
-		Optional<CareerProgramEntity> entity = gradCareerProgramRepository
-				.findById(StringUtils.toRootUpperCase(cpc));
+		Optional<CareerProgramEntity> entity = gradCareerProgramRepository.findById(StringUtils.toRootUpperCase(cpc));
 		if (entity.isPresent()) {
 			return gradCareerProgramTransformer.transformToDTO(entity);
 		} else {
